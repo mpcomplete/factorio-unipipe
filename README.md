@@ -4,9 +4,9 @@ This is a mod for [Factorio](http://factorio.com) that adds a container type
 Filtered Linked Chest, each of which globally shares contents with every other
 chest of a specified item type.
 
-![Demonstration 1](action1.mp4)
-![Demonstration 2](action2.mp4)
-![Demonstration 3](action3.mp4)
+![Demonstration 1](action1.gif)
+![Demonstration 2](action2.gif)
+![Demonstration 3](action3.gif)
 
 # How to use
 

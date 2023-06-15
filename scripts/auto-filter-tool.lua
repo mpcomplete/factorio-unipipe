@@ -2,7 +2,6 @@ local table = require('__stdlib__/stdlib/utils/table')
 local Util = require('util')
 
 local toolName = "filtered-linked-chest-tool"
-local chestName = "filtered-linked-chest"
 
 script.on_event(defines.events.on_player_selected_area, function(event)
   if event.item ~= toolName then return end
@@ -15,11 +14,11 @@ script.on_event(defines.events.on_player_selected_area, function(event)
   local drops = {}
   table.each(player.surface.find_entities_filtered{type = "inserter", area = event.area}, function(v)
     if v.drop_target and v.pickup_target then
-      if v.pickup_target.name == chestName then
+      if v.pickup_target.name == Config.CHEST_NAME then
         local id = v.drop_target.unit_number
         pickups[id] = pickups[id] or {}
         table.insert(pickups[id], {chest = v.pickup_target, source = v.drop_target})
-      elseif v.drop_target.name == chestName then
+      elseif v.drop_target.name == Config.CHEST_NAME then
         local id = v.pickup_target.unit_number
         drops[id] = drops[id] or {}
         table.insert(drops[id], {chest = v.drop_target, source = v.pickup_target})
@@ -28,7 +27,7 @@ script.on_event(defines.events.on_player_selected_area, function(event)
   end)
   -- Miners are special in that they don't have inserters.
   table.each(player.surface.find_entities_filtered{type = "mining-drill", area = event.area}, function(v)
-    if game.item_prototypes[v.mining_target.name] and v.drop_target and v.drop_target.name == chestName then
+    if game.item_prototypes[v.mining_target.name] and v.drop_target and v.drop_target.name == Config.CHEST_NAME then
       local id = v.unit_number
       drops[id] = drops[id] or {}
       table.insert(drops[id], {chest = v.drop_target, source = v})

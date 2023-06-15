@@ -3,8 +3,6 @@ local Area = require('__stdlib__/stdlib/area/area')
 local table = require('__stdlib__/stdlib/utils/table')
 local Util = require('util')
 
-local chestName = "filtered-linked-chest"
-
 -- From https://github.com/mrvn/factorio-example-entity-with-tags
 script.on_event(defines.events.on_player_setup_blueprint, function(event)
   local player = game.players[event.player_index]
@@ -25,7 +23,7 @@ script.on_event(defines.events.on_player_setup_blueprint, function(event)
   if event.mapping.valid then
     local map = event.mapping.get()
     for _, bp_entity in pairs(entities) do
-      if bp_entity.name == chestName then
+      if bp_entity.name == Config.CHEST_NAME then
         -- set tag for our example tag-chest
         local id = bp_entity.entity_number
         local entity = map[id]
@@ -75,7 +73,7 @@ script.on_event(defines.events.on_pre_build, function(event)
   -- Find the positions where the blueprint *would* place the relevant entities.
   local bpEntityPositions = {}
   table.each(player.get_blueprint_entities(), function(v)
-    if v.name == chestName then
+    if v.name == Config.CHEST_NAME then
       local bpPos = rotateAndFlip(Position.new(v.position):add(negCenter), event.direction, event.flip_horizontal, event.flip_vertical)
       local pos = bpPos:add(event.position):center()
       table.insert(bpEntityPositions, pos)
@@ -84,7 +82,7 @@ script.on_event(defines.events.on_pre_build, function(event)
 
   -- Destroy any existing entities where the blueprint would overwrite them.
   table.each(player.surface.find_entities_filtered {name = 'entity-ghost', area = area}, function(v)
-    if v.ghost_name == chestName then
+    if v.ghost_name == Config.CHEST_NAME then
       local center = Position.center(v.position)
       if table.any(bpEntityPositions, function(p) return center:equals(p) end) then
         v.destroy()
@@ -95,7 +93,7 @@ end)
 
 function onBuiltEntity(event)
   local entity = event.created_entity
-  if entity.name == chestName then onBuiltChest(event, entity)
+  if entity.name == Config.CHEST_NAME then onBuiltChest(event, entity)
   else onBuiltPipe(event, entity)
   end
 end
@@ -120,7 +118,7 @@ end
 function onBuiltPipe(event, entity)
 end
 
-local onBuiltFilter =  { { filter = "name", name = chestName }, { filter = "name", name = pipeInName }, { filter = "name", name = pipeOutName } }
+local onBuiltFilter =  { { filter = "name", name = Config.CHEST_NAME }, { filter = "name", name = Config.PIPE_IN_NAME }, { filter = "name", name = Config.PIPE_OUT_NAME } }
 script.on_event(defines.events.on_built_entity, onBuiltEntity, onBuiltFilter)
 script.on_event(defines.events.on_robot_built_entity, onBuiltEntity, onBuiltFilter)
 script.on_event(defines.events.script_raised_built, onBuiltEntity, onBuiltFilter)
@@ -139,7 +137,7 @@ script.on_event(defines.events.on_gui_opened, function(event)
   local player = game.get_player(event.player_index)
   if player == nil then return end
   if event.entity == nil then return end
-  if event.entity.name == chestName then
+  if event.entity.name == Config.CHEST_NAME then
     local guiEntity = event.entity
     local guiLinkId = guiEntity.link_id
     local guiFilter = Util.getNameFromId(guiLinkId)

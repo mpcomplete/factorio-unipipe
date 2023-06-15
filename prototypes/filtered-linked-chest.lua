@@ -183,4 +183,4 @@ local function create(protoName)
   return item, entity, recipe, technology
 end
 
-data:extend({ create("filtered-linked-chest") })
+data:extend({ create(Config.CHEST_NAME) })

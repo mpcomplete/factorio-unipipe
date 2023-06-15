@@ -3,7 +3,7 @@ function makeEntityPastableFrom(protoType)
     if not entityProto.additional_pastable_entities then
       entityProto.additional_pastable_entities = {}
     end
-    table.insert(entityProto.additional_pastable_entities, "filtered-linked-chest")
+    table.insert(entityProto.additional_pastable_entities, Config.CHEST_NAME)
   end
 end
 

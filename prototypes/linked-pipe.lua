@@ -86,9 +86,7 @@ local function createItemEntityRecipe(protoName, isInput)
   return {item, entity, recipe}
 end
 
-local function create(protoName)
-  local protoNameIn = protoName .. "-in"
-  local protoNameOut = protoName .. "-out"
+local function create(protoName, protoNameIn, protoNameOut)
   local inputProtos = createItemEntityRecipe(protoNameIn, true)
   local outputProtos = createItemEntityRecipe(protoNameOut, false)
 
@@ -218,4 +216,4 @@ local function create(protoName)
   data:extend({ technology })
 end
 
-create("linked-pipe")
+create(Config.PIPE_NAME_PREFIX, Config.PIPE_IN_NAME, Config.PIPE_OUT_NAME)

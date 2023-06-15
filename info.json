@@ -1,0 +1,12 @@
+{
+  "name": "FilteredLinkedChest",
+  "version": "1.0.0",
+  "title": "Filtered Linked Chest",
+  "author": "mpcomplete",
+  "factorio_version": "1.1",
+  "dependencies": [
+    "base >= 1.1",
+    "stdlib >= 1.4.8"
+  ],
+  "description": "Linked chests by single item type. Set the chest filter in the GUI, by pasting from assembler recipes, or with the selection tool."
+}

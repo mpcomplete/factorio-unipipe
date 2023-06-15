@@ -8,5 +8,18 @@ Config.PIPE_OUT_NAME = Config.PIPE_NAME_PREFIX .. "-out"
 Config.HIDDEN_INSERTER_NAME = "filtered-linked-pipe-hidden-inserter"
 Config.HIDDEN_ASSEMBLER_NAME = "filtered-linked-pipe-hidden-assembler"
 Config.HIDDEN_CHEST_NAME = "filtered-linked-pipe-hidden-chest"
+Config.HIDDEN_FLUID_PREFIX = "filtered-linked-pipe-hidden-fluid"
+
+function Config.getFluidItem(fluidName)
+  return Config.HIDDEN_FLUID_PREFIX .. "-" .. fluidName
+end
+
+function Config.getFluidFillRecipe(fluidName)
+  return "fill-" .. Config.HIDDEN_FLUID_PREFIX .. "-" .. fluidName
+end
+
+function Config.getFluidEmptyRecipe(fluidName)
+  return "empty-" .. Config.HIDDEN_FLUID_PREFIX .. "-" .. fluidName
+end
 
 return Config

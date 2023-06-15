@@ -11,20 +11,25 @@ function onBuiltPipe(event, entity)
   local chest = player.surface.create_entity{
     name = Config.HIDDEN_CHEST_NAME,
     position = pos:translate(defines.direction.north, 1),
-    direction = defines.direction.north
+    direction = defines.direction.south,
+    force = player.force,
   }
   local inserter = player.surface.create_entity{
     name = Config.HIDDEN_INSERTER_NAME,
     position = pos:translate(defines.direction.north, 2),
-    direction = defines.direction.south
+    direction = defines.direction.south,
+    force = player.force,
   }
   local assembler = player.surface.create_entity{
     name = Config.HIDDEN_ASSEMBLER_NAME,
     position = pos:translate(defines.direction.north, 4),
-    direction = defines.direction.north
+    direction = defines.direction.south,
+    force = player.force,
   }
-  assembler.set_recipe("iron-gear-wheel")
-  Util.setLinkId(chest, Util.getOrCreateId("iron-plate"), "iron-plate")
+  local fluidName = "crude-oil"
+  local itemName = Config.getFluidItem(fluidName)
+  assembler.set_recipe(Config.getFluidEmptyRecipe(fluidName))
+  Util.setLinkId(chest, Util.getOrCreateId(itemName), itemName)
   global.hiddenEntities = global.hiddenEntities or {}
   global.hiddenEntities[entity.unit_number] = { inserter, assembler, chest }
   script.register_on_entity_destroyed(entity)

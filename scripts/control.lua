@@ -95,6 +95,12 @@ end)
 
 function onBuiltEntity(event)
   local entity = event.created_entity
+  if entity.name == chestName then onBuiltChest(event, entity)
+  else onBuiltPipe(event, entity)
+  end
+end
+
+function onBuiltChest(event, entity)
   local tagFilter = event.tags and event.tags["filter"]   -- Extract filter from a blueprint tag
 
   if entity.link_id == 0 and tagFilter == nil and global.lastLinkId == nil then
@@ -111,9 +117,13 @@ function onBuiltEntity(event)
   end
 end
 
-script.on_event(defines.events.on_built_entity, onBuiltEntity, { { filter = "name", name = chestName } })
-script.on_event(defines.events.on_robot_built_entity, onBuiltEntity, { { filter = "name", name = chestName } })
-script.on_event(defines.events.script_raised_built, onBuiltEntity, { { filter = "name", name = chestName } })
+function onBuiltPipe(event, entity)
+end
+
+local onBuiltFilter =  { { filter = "name", name = chestName }, { filter = "name", name = pipeInName }, { filter = "name", name = pipeOutName } }
+script.on_event(defines.events.on_built_entity, onBuiltEntity, onBuiltFilter)
+script.on_event(defines.events.on_robot_built_entity, onBuiltEntity, onBuiltFilter)
+script.on_event(defines.events.script_raised_built, onBuiltEntity, onBuiltFilter)
 
 script.on_event("filtered-linked-chest-paste-alt", function(event)
   local player = game.players[event.player_index]

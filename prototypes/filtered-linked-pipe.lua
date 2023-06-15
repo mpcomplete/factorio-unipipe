@@ -83,7 +83,65 @@ local function createItemEntityRecipe(protoName, isInput)
     result = protoName
   }
 
-  return {item, entity, recipe}
+  local baseInserter = data.raw["inserter"]["stack-inserter"]
+  local baseHidden = {
+      -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+      flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+      collision_mask = {},
+      -- collision_box = {{-0, -0}, {0, 0}},  -- errors "Bad insert vector as the pickup isn't safe distance..
+      -- selection_box = {{0,0}, {0,0}},
+      order = "z",
+      max_health = 2147483648,
+      energy_source = { type = "void" },
+  }
+  local inserter = table.dictionary_combine(baseInserter, baseHidden, {
+    name = Config.HIDDEN_INSERTER_NAME,
+    extension_speed = 1,
+    rotation_speed = 0.5,
+    -- hand_base_picture = util.empty_sprite(1),
+    -- hand_closed_picture = util.empty_sprite(1),
+    -- hand_open_picture = util.empty_sprite(1),
+    -- hand_base_shadow = util.empty_sprite(1),
+    -- hand_closed_shadow = util.empty_sprite(1),
+    -- hand_open_shadow = util.empty_sprite(1),
+    -- platform_picture = util.empty_sprite(1),
+  })
+  inserter.minable = nil
+
+  local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
+  local assembler = table.dictionary_combine(baseAssembler, baseHidden, {
+    name = Config.HIDDEN_ASSEMBLER_NAME,
+    -- drawing_box = {{0,0}, {0,0}},
+    crafting_speed = 100,
+    bottleneck_ignore = true,
+  })
+  assembler.minable = nil
+  -- assembler.animation = nil
+  assembler.module_specification = nil
+  assembler.allowed_effects = nil
+
+  local baseChest = data.raw["linked-container"]["linked-chest"]
+  local chest = table.dictionary_combine(baseChest, baseHidden, {
+    name = Config.HIDDEN_CHEST_NAME,
+    -- picture = util.empty_sprite(1),
+    inventory_size = 48,
+    inventory_type = "with_filters_and_bar",
+    gui_mode = "all",
+  })
+  chest.minable = nil
+  -- function logtable(name, t)
+  --   for k,v in pairs(t) do
+  --     if type(v) == "table" then
+  --       logtable(name .. "." .. k, v)
+  --     elseif type(v) == "string" or type(v) == "number" then
+  --       log(name .. "." .. k .. ": " .. v)
+  --     else
+  --       log(name .. "." .. k .. ": some type=" .. type(v))
+  --     end
+  --   end
+  -- end
+  -- logtable("asm", assembler)
+  return {item, entity, recipe, inserter, assembler, chest}
 end
 
 local function create(protoName, protoNameIn, protoNameOut)

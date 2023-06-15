@@ -115,9 +115,6 @@ function onBuiltChest(event, entity)
   end
 end
 
-function onBuiltPipe(event, entity)
-end
-
 local onBuiltFilter =  { { filter = "name", name = Config.CHEST_NAME }, { filter = "name", name = Config.PIPE_IN_NAME }, { filter = "name", name = Config.PIPE_OUT_NAME } }
 script.on_event(defines.events.on_built_entity, onBuiltEntity, onBuiltFilter)
 script.on_event(defines.events.on_robot_built_entity, onBuiltEntity, onBuiltFilter)

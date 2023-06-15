@@ -6,7 +6,8 @@
     "script",
     "game",
     "data",
-    "settings"
+    "settings",
+    "util"
   ],
   "Lua.diagnostics.disable": [
     "lowercase-global"

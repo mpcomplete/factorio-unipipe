@@ -1,7 +1,5 @@
 local table = require('__stdlib__/stdlib/utils/table')
 
-local chestName = "filtered-linked-chest"
-
 local Util = {}
 
 function Util.getNextId()
@@ -88,7 +86,7 @@ end
 
 function Util.setChestFilter(dest, source, isOutput)
   if source == nil or dest == nil or not source.valid or not dest.valid then return end
-  if dest.name ~= chestName then return end
+  if dest.name ~= Config.CHEST_NAME then return end
 
   local itemCycle = {}
   if not isOutput then

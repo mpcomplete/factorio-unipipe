@@ -3,7 +3,7 @@ local icon = "__base__/graphics/icons/linked-chest-icon.png"
 data:extend({
   {
     type = "selection-tool",
-    name = "filtered-linked-chest-tool",
+    name = Config.TOOL_NAME,
     icon = icon,
     flags = { "hidden", "only-in-cursor", "not-stackable", "spawnable" },
     subgroup = "tool",
@@ -21,10 +21,10 @@ data:extend({
   },
   {
     type = "shortcut",
-    name = "filtered-linked-chest-tool",
-    order = "o[filtered-linked-chest-tool]",
+    name = Config.TOOL_NAME,
+    order = "o[" .. Config.TOOL_NAME .. "]",
     action = "spawn-item",
-    item_to_spawn = "filtered-linked-chest-tool",
+    item_to_spawn = Config.TOOL_NAME,
     toggleable = true,
     icon = {
       filename = icon,
@@ -33,19 +33,5 @@ data:extend({
       scale = 0.5,
       flags = { "gui-icon" }
     }
-    -- small_icon = {
-    --   filename = icon,
-    --   -- priority = "extra-high-no-scale",
-    --   size = 64,
-    --   scale = 0.5,
-    --   flags = { "gui-icon" }
-    -- },
-    -- disabled_small_icon = {
-    --   filename = icon,
-    --   -- priority = "extra-high-no-scale",
-    --   size = 64,
-    --   scale = 0.5,
-    --   flags = { "gui-icon" }
-    -- }
   }
 })

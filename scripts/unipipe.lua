@@ -7,10 +7,11 @@ local Util = require('util')
 Pipe = {}
 
 function getDefaultFluidName()
+  if game.fluid_prototypes["water"] then return "water" end
   for k,v in pairs(game.fluid_prototypes) do
-    if v.valid then return v.name end
+    if v.valid and not v.hidden then return v.name end
   end
-  return "water"
+  return "steam" -- no fluids?
 end
 
 function Pipe.onBuiltEntity(event, entity)
@@ -23,6 +24,7 @@ function Pipe.onBuiltPipe(event, entity)
   local isInput = entity.name == Config.PIPE_IN_NAME
   game.print('built pipe ' .. entity.unit_number)
   local pos = Position.new(entity.position)
+  local dir = entity.direction
   -- 3 entities from north to south: assembler -> inserter -> chest
   local assembler = entity.surface.create_entity{
     name = Config.HIDDEN_ASSEMBLER_NAME,
@@ -32,12 +34,12 @@ function Pipe.onBuiltPipe(event, entity)
   local inserter = entity.surface.create_entity{
     name = Config.HIDDEN_INSERTER_NAME,
     position = pos,
-    direction = isInput and defines.direction.north or defines.direction.south, -- direction is pickup source
+    direction = isInput and Direction.opposite(dir) or dir, -- sets pickup driection. `dir` points to chest
     force = entity.force,
   }
   local chest = entity.surface.create_entity{
     name = Config.HIDDEN_CHEST_NAME,
-    position = pos:add({0, .5}),
+    position = pos:translate(dir, .5),
     force = entity.force,
   }
   inserter.inserter_stack_size_override = 20

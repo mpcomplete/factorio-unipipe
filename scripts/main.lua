@@ -93,15 +93,13 @@ end)
 
 function onBuiltEntity(event)
   local entity = event.created_entity
-  if entity.name == Config.CHEST_NAME then Chest.onBuiltEntity(event, entity)
-  else Pipe.onBuiltEntity(event, entity)
-  end
+  Chest.onBuiltEntity(event, entity)
+  Pipe.onBuiltEntity(event, entity)
 end
 
-local onBuiltFilter =  { { filter = "name", name = Config.CHEST_NAME }, { filter = "name", name = Config.PIPE_IN_NAME }, { filter = "name", name = Config.PIPE_OUT_NAME } }
-script.on_event(defines.events.on_built_entity, onBuiltEntity, onBuiltFilter)
-script.on_event(defines.events.on_robot_built_entity, onBuiltEntity, onBuiltFilter)
-script.on_event(defines.events.script_raised_built, onBuiltEntity, onBuiltFilter)
+script.on_event(defines.events.on_built_entity, onBuiltEntity)
+script.on_event(defines.events.on_robot_built_entity, onBuiltEntity)
+script.on_event(defines.events.script_raised_built, onBuiltEntity)
 
 script.on_event("zy-uni-paste-alt", function(event)
   local player = game.players[event.player_index]
@@ -111,20 +109,6 @@ end)
 script.on_event(defines.events.on_entity_settings_pasted, function(event)
   local player = game.players[event.player_index]
   Util.setChestFilter(event.destination, event.source, false)
-end)
-
-script.on_event(defines.events.on_gui_opened, function(event)
-  local player = game.get_player(event.player_index)
-  if player == nil then return end
-  if event.entity == nil then return end
-  if event.entity.name == Config.CHEST_NAME then Chest.onGuiOpened(event, player, event.entity)
-  elseif Config.isPipeName(event.entity.name) then Pipe.onGuiOpened(event, player, event.entity)
-  end
-end)
-
-script.on_event(defines.events.on_gui_closed, function(event)
-  script.on_event(defines.events.on_tick, nil)
-  script.on_event(defines.events.on_gui_elem_changed, nil)
 end)
 
 function initGui(player)

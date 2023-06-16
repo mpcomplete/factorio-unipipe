@@ -22,4 +22,8 @@ function Config.getFluidEmptyRecipe(fluidName)
   return "empty-" .. Config.HIDDEN_FLUID_PREFIX .. "-" .. fluidName
 end
 
+function Config.isPipeName(name)
+  return name == Config.PIPE_IN_NAME or name == Config.PIPE_OUT_NAME
+end
+
 return Config

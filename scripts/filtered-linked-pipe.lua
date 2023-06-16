@@ -17,7 +17,7 @@ function onBuiltPipe(event, entity)
   }
   local inserter = player.surface.create_entity{
     name = Config.HIDDEN_INSERTER_NAME,
-    position = pos:add({0, .5}),
+    position = pos,
     direction = isInput and defines.direction.north or defines.direction.south, -- direction is pickup source
     force = player.force,
   }

@@ -23,7 +23,7 @@ function onBuiltPipe(event, entity)
   }
   local chest = player.surface.create_entity{
     name = Config.HIDDEN_CHEST_NAME,
-    position = pos:add({0, 1}),
+    position = pos:add({0, .5}),
     force = player.force,
   }
   local fluidName = "crude-oil"

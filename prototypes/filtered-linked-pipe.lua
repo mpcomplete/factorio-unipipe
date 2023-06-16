@@ -20,31 +20,6 @@ local function createItemEntityRecipe(protoName, isInput)
 
   --- Entity ---
 
-  -- local fluidBox =
-  --     isInput and {
-  --       production_type = "input",
-  --       pipe_covers = pumpBase.fluid_box.pipe_covers,
-  --       base_area = 10,
-  --       base_level = -1,
-  --       pipe_connections =
-  --       {
-  --         {
-  --           type = "input",
-  --           position = { 1, -2 }
-  --         }
-  --       }
-  --     } or {
-  --       production_type = "output",
-  --       pipe_covers = pumpBase.fluid_box.pipe_covers,
-  --       base_level = 1,
-  --       pipe_connections =
-  --       {
-  --         {
-  --           type = "output",
-  --           position = { -1, 2 }
-  --         }
-  --       }
-  --     }
   local entity = table.merge(table.deepcopy(data.raw["simple-entity-with-force"]["simple-entity-with-force"]), {
     name = protoName,
     icon = pumpBase.icon,
@@ -68,7 +43,6 @@ local function createItemEntityRecipe(protoName, isInput)
       -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       collision_mask = {},
-      -- collision_box = {{-0, -0}, {0, 0}},  -- errors "Bad insert vector as the pickup isn't safe distance..
       -- selection_box = {{0,0}, {0,0}},
       order = "z",
       max_health = 2147483648,
@@ -79,6 +53,9 @@ local function createItemEntityRecipe(protoName, isInput)
     extension_speed = 1,
     rotation_speed = 0.5,
     stack_size_bonus = 20,
+    collision_box = {{-0.05, -0.05}, {0.05, 0.05}},
+    pickup_position = {0, -.8},
+    insert_position = {0, .8},
     -- hand_base_picture = util.empty_sprite(1),
     -- hand_closed_picture = util.empty_sprite(1),
     -- hand_open_picture = util.empty_sprite(1),
@@ -93,7 +70,6 @@ local function createItemEntityRecipe(protoName, isInput)
   local assembler = table.dictionary_combine(baseAssembler, baseHidden, {
     name = Config.HIDDEN_ASSEMBLER_NAME,
     collision_box = {{-0.9, -0.9}, {0.9, 0.9}},
-    -- collision_box = {{-0.29, -0.29}, {0.29, 0.29}},
     drawing_box = {{0,0}, {0,0}},
     crafting_speed = 100,
     bottleneck_ignore = true,

@@ -78,6 +78,7 @@ local function createItemEntityRecipe(protoName, isInput)
     name = Config.HIDDEN_INSERTER_NAME,
     extension_speed = 1,
     rotation_speed = 0.5,
+    stack_size_bonus = 20,
     -- hand_base_picture = util.empty_sprite(1),
     -- hand_closed_picture = util.empty_sprite(1),
     -- hand_open_picture = util.empty_sprite(1),

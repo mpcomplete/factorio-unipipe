@@ -1,6 +1,6 @@
 local Config = require("config")
 
-local fluid_per_item = 1000
+local fluid_per_item = 100
 
 -- Generates a barrel item with the provided name and fluid definition using the provided empty barrel stack size
 local function createFluidItem(name, fluid)
@@ -37,7 +37,10 @@ local function createFillRecipe(item, fluid)
     category = "crafting-with-fluid",
     subgroup = "fill-barrel",
     order = "b[fill-" .. item.name .. "]",
+    energy_required = 0.01,
     enabled = true,
+    hidden = true,
+    hide_from_stats = true,
     icon = item.icon,
     icon_size = item.icon_size,
     icon_mipmaps = item.icon_mipmaps,
@@ -64,7 +67,10 @@ local function createEmptyRecipe(item, fluid)
     category = "crafting-with-fluid",
     subgroup = "empty-barrel",
     order = "c[empty-" .. item.name .. "]",
+    energy_required = 0.01,
     enabled = true,
+    hidden = true,
+    hide_from_stats = true,
     icon = item.icon,
     icon_size = item.icon_size,
     icon_mipmaps = item.icon_mipmaps,

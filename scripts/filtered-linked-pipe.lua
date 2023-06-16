@@ -32,6 +32,7 @@ function onBuiltPipe(event, entity)
   local itemName = Config.getFluidItem(fluidName)
   assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidEmptyRecipe(fluidName))
   assembler.direction = Direction.opposite(dir)  -- need to set after setting recipe
+  inserter.inserter_stack_size_override = 20
   Util.setLinkId(chest, Util.getOrCreateId(itemName), itemName)
   global.hiddenEntities = global.hiddenEntities or {}
   global.hiddenEntities[entity.unit_number] = { inserter, assembler, chest }

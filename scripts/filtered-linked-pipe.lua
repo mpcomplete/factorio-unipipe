@@ -1,34 +1,37 @@
 local Position = require('__stdlib__/stdlib/area/position')
 local Area = require('__stdlib__/stdlib/area/area')
 local table = require('__stdlib__/stdlib/utils/table')
+local Direction = require('__stdlib__/stdlib/area/direction')
 local Util = require('util')
 
 function onBuiltPipe(event, entity)
+  local isInput = entity.name == Config.PIPE_IN_NAME
   local player = game.players[event.player_index]
   game.print('built pipe ' .. entity.unit_number)
   local pos = Position.new(entity.position)
+  local dir = entity.direction
+  local flowDir = isInput and Direction.opposite(dir) or dir
   -- local inputOffset = 
-  local chest = player.surface.create_entity{
-    name = Config.HIDDEN_CHEST_NAME,
-    position = pos:translate(defines.direction.north, 1),
-    direction = defines.direction.south,
+  local assembler = player.surface.create_entity{
+    name = Config.HIDDEN_ASSEMBLER_NAME,
+    position = pos,
     force = player.force,
   }
   local inserter = player.surface.create_entity{
     name = Config.HIDDEN_INSERTER_NAME,
-    position = pos:translate(defines.direction.north, 2),
-    direction = defines.direction.south,
+    position = pos:translate(flowDir, -1),
+    direction = isInput and flowDir or Direction.opposite(flowDir),
     force = player.force,
   }
-  local assembler = player.surface.create_entity{
-    name = Config.HIDDEN_ASSEMBLER_NAME,
-    position = pos:translate(defines.direction.north, 4),
-    direction = defines.direction.south,
+  local chest = player.surface.create_entity{
+    name = Config.HIDDEN_CHEST_NAME,
+    position = pos:translate(flowDir, -2),
     force = player.force,
   }
   local fluidName = "crude-oil"
   local itemName = Config.getFluidItem(fluidName)
-  assembler.set_recipe(Config.getFluidEmptyRecipe(fluidName))
+  assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidEmptyRecipe(fluidName))
+  assembler.direction = Direction.opposite(dir)  -- need to set after setting recipe
   Util.setLinkId(chest, Util.getOrCreateId(itemName), itemName)
   global.hiddenEntities = global.hiddenEntities or {}
   global.hiddenEntities[entity.unit_number] = { inserter, assembler, chest }

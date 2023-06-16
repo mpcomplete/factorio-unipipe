@@ -3,7 +3,8 @@ local table = require('__stdlib__/stdlib/utils/table')
 local function createItemEntityRecipe(protoName, isInput)
   --- Item ---
 
-  local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
+  -- local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
+  local pumpBase = data.raw["pump"]["pump"]
   local icon = pumpBase.icon
   local item = table.merge(table.deepcopy(data.raw["item"]["pump"]), {
     type = "item",
@@ -19,69 +20,48 @@ local function createItemEntityRecipe(protoName, isInput)
 
   --- Entity ---
 
-  local fluidBox =
-      isInput and {
-        production_type = "input",
-        pipe_covers = pumpBase.fluid_box.pipe_covers,
-        base_area = 10,
-        base_level = -1,
-        pipe_connections =
-        {
-          {
-            type = "input",
-            position = { 1, -2 }
-          }
-        }
-      } or {
-        production_type = "output",
-        pipe_covers = pumpBase.fluid_box.pipe_covers,
-        base_level = 1,
-        pipe_connections =
-        {
-          {
-            type = "output",
-            position = { -1, 2 }
-          }
-        }
-      }
-  local entity = table.merge(pumpBase, {
-    type = "pump",
+  -- local fluidBox =
+  --     isInput and {
+  --       production_type = "input",
+  --       pipe_covers = pumpBase.fluid_box.pipe_covers,
+  --       base_area = 10,
+  --       base_level = -1,
+  --       pipe_connections =
+  --       {
+  --         {
+  --           type = "input",
+  --           position = { 1, -2 }
+  --         }
+  --       }
+  --     } or {
+  --       production_type = "output",
+  --       pipe_covers = pumpBase.fluid_box.pipe_covers,
+  --       base_level = 1,
+  --       pipe_connections =
+  --       {
+  --         {
+  --           type = "output",
+  --           position = { -1, 2 }
+  --         }
+  --       }
+  --     }
+  local entity = table.merge(table.deepcopy(data.raw["simple-entity-with-force"]["simple-entity-with-force"]), {
     name = protoName,
+    icon = pumpBase.icon,
+    icon_size = pumpBase.icon_size,
+    icon_mipmaps = pumpBase.icon_mipmaps,
     minable = { mining_time = 0.2, result = protoName },
     gui_mode = "all",
     corpse = "",
-    -- fluid_box = fluidBox,
+    fluid_box = {},
     selecttable_in_game = true,
     collision_box = {{-0.29, -0.9}, {0.29, 0.9}},
     selection_box = {{-0.5, -1}, {0.5, 1}},
+    picture = pumpBase.animations,
   })
+  -- entity.picture = nil
 
-  --- Recipe ---
-  local crafting_cost = settings.startup["flc-crafting-cost"].value
-  local ingredients = {
-      --crafting_cost == "easy" and {
-        { "iron-plate", 20 }
-  }
-  ingredients =
-      crafting_cost == "medium" and {
-        { "steel-chest",        10 },
-        { "iron-plate",         100 },
-        { "copper-plate",       100 },
-        { "electronic-circuit", 50 },
-      } or crafting_cost == "hard" and {
-        { "steel-chest",      20 },
-        { "iron-plate",       100 },
-        { "copper-plate",     100 },
-        { "advanced-circuit", 50 },
-        { "processing-unit",  10 }
-      } or ingredients
-  local recipe = {
-    type = "recipe",
-    name = protoName,
-    enabled = false,
-    ingredients = ingredients,
-    result = protoName
-  }
+  --- Hidden entities ---
 
   local baseInserter = data.raw["inserter"]["stack-inserter"]
   local baseHidden = {
@@ -111,10 +91,14 @@ local function createItemEntityRecipe(protoName, isInput)
   local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
   local assembler = table.dictionary_combine(baseAssembler, baseHidden, {
     name = Config.HIDDEN_ASSEMBLER_NAME,
-    -- drawing_box = {{0,0}, {0,0}},
+    collision_box = {{-0.9, -0.9}, {0.9, 0.9}},
+    -- collision_box = {{-0.29, -0.29}, {0.29, 0.29}},
+    drawing_box = {{0,0}, {0,0}},
     crafting_speed = 100,
     bottleneck_ignore = true,
   })
+  assembler.fluid_boxes[1].pipe_connections[1].position = {0, -1.5}
+  assembler.fluid_boxes[2].pipe_connections[1].position = {0, 1.5}
   assembler.minable = nil
   -- assembler.animation = nil
   assembler.module_specification = nil
@@ -141,6 +125,34 @@ local function createItemEntityRecipe(protoName, isInput)
   --   end
   -- end
   -- logtable("asm", assembler)
+  
+  --- Recipe ---
+  local crafting_cost = settings.startup["flc-crafting-cost"].value
+  local ingredients = {
+      --crafting_cost == "easy" and {
+        { "iron-plate", 20 }
+  }
+  ingredients =
+      crafting_cost == "medium" and {
+        { "steel-chest",        10 },
+        { "iron-plate",         100 },
+        { "copper-plate",       100 },
+        { "electronic-circuit", 50 },
+      } or crafting_cost == "hard" and {
+        { "steel-chest",      20 },
+        { "iron-plate",       100 },
+        { "copper-plate",     100 },
+        { "advanced-circuit", 50 },
+        { "processing-unit",  10 }
+      } or ingredients
+  local recipe = {
+    type = "recipe",
+    name = protoName,
+    enabled = false,
+    ingredients = ingredients,
+    result = protoName
+  }
+
   return {item, entity, recipe, inserter, assembler, chest}
 end
 

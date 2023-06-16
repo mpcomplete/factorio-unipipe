@@ -4,8 +4,6 @@ local function createItemEntityRecipe(protoName, isInput)
   --- Item ---
 
   -- local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
-  local pumpBase = data.raw["pump"]["pump"]
-  local icon = pumpBase.icon
   local item = table.merge(table.deepcopy(data.raw["item"]["pump"]), {
     type = "item",
     name = protoName,
@@ -20,6 +18,7 @@ local function createItemEntityRecipe(protoName, isInput)
 
   --- Entity ---
 
+  local pumpBase = data.raw["pump"]["pump"]
   local entity = table.merge(table.deepcopy(data.raw["simple-entity-with-force"]["simple-entity-with-force"]), {
     name = protoName,
     icon = pumpBase.icon,
@@ -48,7 +47,7 @@ local function createItemEntityRecipe(protoName, isInput)
       max_health = 2147483648,
       energy_source = { type = "void" },
   }
-  local inserter = table.dictionary_combine(baseInserter, baseHidden, {
+  local inserter = table.dictionary_combine(table.deepcopy(baseInserter), baseHidden, {
     name = Config.HIDDEN_INSERTER_NAME,
     extension_speed = 1,
     rotation_speed = 0.5,
@@ -67,7 +66,7 @@ local function createItemEntityRecipe(protoName, isInput)
   inserter.minable = nil
 
   local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
-  local assembler = table.dictionary_combine(baseAssembler, baseHidden, {
+  local assembler = table.dictionary_combine(table.deepcopy(baseAssembler), baseHidden, {
     name = Config.HIDDEN_ASSEMBLER_NAME,
     collision_box = {{-0.9, -0.9}, {0.9, 0.9}},
     drawing_box = {{0,0}, {0,0}},
@@ -82,7 +81,7 @@ local function createItemEntityRecipe(protoName, isInput)
   assembler.allowed_effects = nil
 
   local baseChest = data.raw["linked-container"]["linked-chest"]
-  local chest = table.dictionary_combine(baseChest, baseHidden, {
+  local chest = table.dictionary_combine(table.deepcopy(baseChest), baseHidden, {
     name = Config.HIDDEN_CHEST_NAME,
     -- picture = util.empty_sprite(1),
     inventory_size = 48,

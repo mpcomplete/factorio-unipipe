@@ -208,6 +208,18 @@ script.on_configuration_changed(function(event)
   for i, player in pairs(game.players) do
     initGui(player)
   end
+  -- TODO
+  -- for _, surface in pairs(game.surfaces) do
+  --   table.each(surface.find_entities_filtered {name = Config.CHEST_NAME}, function(v)
+  --     local inventory = v.get_output_inventory()
+  --     local filter = inventory.get_filter(1)
+  --     if filter and filter ~= "" then
+  --       global.nameToId[filter] = v.link_id
+  --       global.nextId = math.max((global.nextId or 0), v.link_id) + 1
+  --       game.print("Found filter " .. filter .. " with id=" .. v.link_id)
+  --     end
+  --   end)
+  -- end
 end)
 
 script.on_event(defines.events.on_player_created, function(event)

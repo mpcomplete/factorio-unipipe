@@ -6,25 +6,24 @@ local Util = require('util')
 
 function onBuiltPipe(event, entity)
   local isInput = entity.name == Config.PIPE_IN_NAME
-  local player = game.players[event.player_index]
   game.print('built pipe ' .. entity.unit_number)
   local pos = Position.new(entity.position)
   -- 3 entities from north to south: assembler -> inserter -> chest
-  local assembler = player.surface.create_entity{
+  local assembler = entity.surface.create_entity{
     name = Config.HIDDEN_ASSEMBLER_NAME,
     position = pos,
-    force = player.force,
+    force = entity.force,
   }
-  local inserter = player.surface.create_entity{
+  local inserter = entity.surface.create_entity{
     name = Config.HIDDEN_INSERTER_NAME,
     position = pos,
     direction = isInput and defines.direction.north or defines.direction.south, -- direction is pickup source
-    force = player.force,
+    force = entity.force,
   }
-  local chest = player.surface.create_entity{
+  local chest = entity.surface.create_entity{
     name = Config.HIDDEN_CHEST_NAME,
     position = pos:add({0, .5}),
-    force = player.force,
+    force = entity.force,
   }
   local fluidName = "crude-oil"
   local itemName = Config.getFluidItem(fluidName)

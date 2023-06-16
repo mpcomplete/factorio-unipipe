@@ -1,5 +1,5 @@
 #!/bin/sh
-name=FilteredLinkedChest_1.0.0
+name=Unichest_1.0.0
 mkdir $name
 cp -a * $name
 rm $name/*.sh $name/*.zip $name/$name $name/action.gif -rf

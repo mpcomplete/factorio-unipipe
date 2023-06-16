@@ -120,7 +120,7 @@ script.on_event(defines.events.on_built_entity, onBuiltEntity, onBuiltFilter)
 script.on_event(defines.events.on_robot_built_entity, onBuiltEntity, onBuiltFilter)
 script.on_event(defines.events.script_raised_built, onBuiltEntity, onBuiltFilter)
 
-script.on_event("filtered-linked-chest-paste-alt", function(event)
+script.on_event("zy-uni-paste-alt", function(event)
   local player = game.players[event.player_index]
   Util.setChestFilter(player.selected, player.entity_copy_source, true)
 end)
@@ -138,18 +138,18 @@ script.on_event(defines.events.on_gui_opened, function(event)
     local guiEntity = event.entity
     local guiLinkId = guiEntity.link_id
     local guiFilter = Util.getNameFromId(guiLinkId)
-    player.gui.relative.flcFrame.itemFilter.elem_value = guiFilter
+    player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
     Util.setLinkId(guiEntity, guiLinkId, guiFilter)
 
     script.on_event(defines.events.on_tick, function(event)
       -- Reset any changes via the GUIs we can't control (e.g. Link bitmask and manual filtering).
-      player.gui.relative.flcFrame.itemFilter.elem_value = guiFilter
+      player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
       Util.setLinkId(guiEntity, guiLinkId, guiFilter)
     end)
 
     script.on_event(defines.events.on_gui_elem_changed, function(event)
       local element = event.element
-      if element ~= player.gui.relative.flcFrame.itemFilter then return end
+      if element ~= player.gui.relative.unichestFrame.itemFilter then return end
       if element.elem_value and element.elem_value ~= "" then
         -- Don't let them set an empty filter.
         guiLinkId = Util.getOrCreateId(element.elem_value)
@@ -167,19 +167,19 @@ end)
 function buildGui(player)
   player.gui.relative.add {
     type = "frame",
-    name = "flcFrame",
+    name = "unichestFrame",
     direction = "vertical",
-    caption = { "flc.heading" },
+    caption = { "zy-uni.heading" },
     anchor = {
       gui = defines.relative_gui_type.linked_container_gui,
       position = defines.relative_gui_position.right
     },
     visible = true
   }
-  player.gui.relative.flcFrame.add {
+  player.gui.relative.unichestFrame.add {
     type = "choose-elem-button",
     name = "itemFilter",
-    tooltip = { "flc.chooseElemTooltip" },
+    tooltip = { "zy-uni.chooseElemTooltip" },
     style = "slot_button",
     elem_type = "item"
   }
@@ -187,7 +187,7 @@ end
 
 function destroyGui(player)
   if player.gui.relative.flcFrame ~= nil then player.gui.relative.flcFrame.destroy() end
-  if player.gui.screen.flcFrame ~= nil then player.gui.screen.flcFrame.destroy() end
+  if player.gui.relative.unichestFrame ~= nil then player.gui.relative.unichestFrame.destroy() end
 end
 
 function initGui(player)

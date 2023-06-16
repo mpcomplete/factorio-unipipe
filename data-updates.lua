@@ -16,7 +16,7 @@ local function createFluidItem(name, fluid)
   local result = {
     type = "item",
     name = name,
-    localised_name = {"item-name.filtered-linked-pipe-fluid-item", fluid.localised_name or {"fluid-name." .. fluid.name}},
+    localised_name = {"item-name.zy-unipipe-fluid-item", fluid.localised_name or {"fluid-name." .. fluid.name}},
     flags = {"hidden", "hide-from-bonus-gui"},
     icon = icon.icon,
     icon_size = icon.icon_size,
@@ -35,7 +35,7 @@ local function createFillRecipe(item, fluid)
   local recipe = {
     type = "recipe",
     name = Config.getFluidFillRecipe(fluid.name),
-    localised_name = {"recipe-name.filtered-linked-pipe-fill", fluid.localised_name or {"fluid-name." .. fluid.name}},
+    localised_name = {"recipe-name.zy-unipipe-fill", fluid.localised_name or {"fluid-name." .. fluid.name}},
     category = "crafting-with-fluid",
     subgroup = "fill-barrel",
     order = "b[fill-" .. item.name .. "]",
@@ -66,7 +66,7 @@ local function createEmptyRecipe(item, fluid)
   local recipe = {
     type = "recipe",
     name = Config.getFluidEmptyRecipe(fluid.name),
-    localised_name = {"recipe-name.filtered-linked-pipe-empty", fluid.localised_name or {"fluid-name." .. fluid.name}},
+    localised_name = {"recipe-name.zy-unipipe-empty", fluid.localised_name or {"fluid-name." .. fluid.name}},
     category = "crafting-with-fluid",
     subgroup = "empty-barrel",
     order = "c[empty-" .. item.name .. "]",

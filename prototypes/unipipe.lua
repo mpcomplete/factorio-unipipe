@@ -104,7 +104,7 @@ local function createItemEntityRecipe(protoName, isInput)
   -- logtable("asm", assembler)
   
   --- Recipe ---
-  local crafting_cost = settings.startup["flc-crafting-cost"].value
+  local crafting_cost = settings.startup["zy-uni-crafting-cost"].value
   local ingredients = {
       --crafting_cost == "easy" and {
         { "iron-plate", 20 }
@@ -139,7 +139,7 @@ local function create(protoName, protoNameIn, protoNameOut)
 
   --- Technology ---
 
-  local research = settings.startup["flc-required-research"].value
+  local research = settings.startup["zy-uni-required-research"].value
   local tech = {
       -- research == "automation" and {
         count = 10,
@@ -263,4 +263,4 @@ local function create(protoName, protoNameIn, protoNameOut)
   data:extend({ technology })
 end
 
-create(Config.PIPE_NAME_PREFIX, Config.PIPE_IN_NAME, Config.PIPE_OUT_NAME)
+create(Config.PIPE_PREFIX, Config.PIPE_IN_NAME, Config.PIPE_OUT_NAME)

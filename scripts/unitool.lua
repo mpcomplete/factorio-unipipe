@@ -1,10 +1,8 @@
 local table = require('__stdlib__/stdlib/utils/table')
 local Util = require('util')
 
-local toolName = "filtered-linked-chest-tool"
-
 script.on_event(defines.events.on_player_selected_area, function(event)
-  if event.item ~= toolName then return end
+  if event.item ~= Config.TOOL_NAME then return end
 
   local player = game.players[event.player_index]
 
@@ -47,7 +45,7 @@ script.on_event(defines.events.on_player_selected_area, function(event)
 end)
 
 script.on_event(defines.events.on_player_dropped_item, function(event)
-  if event.entity and event.entity.stack and event.entity.stack.name == toolName then
+  if event.entity and event.entity.stack and event.entity.stack.name == Config.TOOL_NAME then
     event.entity.stack.clear()
   end
 end)

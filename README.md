@@ -1,4 +1,4 @@
-# Factorio FilteredLinkedChests
+# Factorio Unichest and Unipipe
 
 This is a mod for [Factorio](http://factorio.com) that adds a container type
 Filtered Linked Chest, each of which globally shares contents with every other

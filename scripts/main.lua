@@ -121,6 +121,15 @@ script.on_init(function(event)
   for i, player in pairs(game.players) do
     initGui(player)
   end
+  if remote.interfaces["PickerDollies"] and remote.interfaces["PickerDollies"]["dolly_moved_entity_id"] then
+    script.on_event(remote.call("PickerDollies", "dolly_moved_entity_id"), Pipe.onMovedEntity)
+  end
+end)
+
+script.on_load(function(event)
+  if remote.interfaces["PickerDollies"] and remote.interfaces["PickerDollies"]["dolly_moved_entity_id"] then
+    script.on_event(remote.call("PickerDollies", "dolly_moved_entity_id"), Pipe.onMovedEntity)
+  end
 end)
 
 script.on_configuration_changed(function(event)

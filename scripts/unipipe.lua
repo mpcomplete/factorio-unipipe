@@ -43,6 +43,8 @@ function Pipe.onBuiltPipe(event, entity)
     force = entity.force,
   }
   inserter.inserter_stack_size_override = 20
+  inserter.pickup_target = isInput and assembler or chest
+  inserter.drop_target = isInput and chest or assembler
   global.hiddenEntities = global.hiddenEntities or {}
   global.hiddenEntities[entity.unit_number] = { assembler = assembler, inserter = inserter, chest = chest }
   global.hiddenAssemblerToPipe = global.hiddenAssemblerToPipe or {}
@@ -63,6 +65,23 @@ function Pipe.onBuiltFluidbox(event, entity)
   end
 end
 
+function Pipe.onMovedEntity(event)
+  local entity = event.moved_entity
+  if not Config.isPipeName(entity.name) then return end
+  local hidden = global.hiddenEntities[entity.unit_number]
+  if not hidden then return end
+  local pos = Position.new(entity.position)
+  hidden.assembler.teleport(pos)
+  hidden.inserter.teleport(pos)
+  hidden.chest.teleport(pos:translate(entity.direction, .5))
+end
+
+function Pipe.updateFluidFilter(entity)
+  local hidden = global.hiddenEntities[entity.unit_number]
+  if not hidden then return end
+  updateUnipipesForSystem(hidden.assembler.fluidbox, hidden.assembler.fluidbox.get_fluid_system_id(1))
+end
+
 function Pipe.setFluidFilter(entity, fluidName)
   local hidden = global.hiddenEntities[entity.unit_number]
   if not hidden then return end
@@ -70,6 +89,7 @@ function Pipe.setFluidFilter(entity, fluidName)
   local itemName = Config.getFluidItem(fluidName)
   hidden.assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidEmptyRecipe(fluidName))
   hidden.assembler.direction = Direction.opposite(entity.direction)  -- need to set after setting recipe
+  hidden.inserter.set_filter(1, itemName)
   Util.setLinkId(hidden.chest, Util.getOrCreateId(itemName), itemName)
 end
 

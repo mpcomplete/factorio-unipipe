@@ -37,7 +37,7 @@ local function createItemEntityRecipe(protoName, isInput)
 
   --- Hidden entities ---
 
-  local baseInserter = data.raw["inserter"]["stack-inserter"]
+  local baseInserter = data.raw["inserter"]["stack-filter-inserter"]
   local baseHidden = {
       -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
@@ -55,6 +55,7 @@ local function createItemEntityRecipe(protoName, isInput)
     collision_box = {{-0.05, -0.05}, {0.05, 0.05}},
     pickup_position = {0, -.8},
     insert_position = {0, .8},
+    draw_inserter_arrow = false,
     -- hand_base_picture = util.empty_sprite(1),
     -- hand_closed_picture = util.empty_sprite(1),
     -- hand_open_picture = util.empty_sprite(1),
@@ -68,7 +69,7 @@ local function createItemEntityRecipe(protoName, isInput)
   local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
   local assembler = table.dictionary_combine(table.deepcopy(baseAssembler), baseHidden, {
     name = Config.HIDDEN_ASSEMBLER_NAME,
-    collision_box = {{-0.9, -0.9}, {0.9, 0.9}},
+    collision_box = {{-0.6, -0.6}, {0.6, 0.6}},
     drawing_box = {{0,0}, {0,0}},
     crafting_speed = 100,
     bottleneck_ignore = true,

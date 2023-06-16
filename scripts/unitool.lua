@@ -42,6 +42,14 @@ script.on_event(defines.events.on_player_selected_area, function(event)
       Util.setChestFilter(v.chest, v.source, true)
     end
   end
+
+  -- Update pipes too.
+  table.each(player.surface.find_entities_filtered{name = Config.PIPE_IN_NAME, area = event.area}, function(v)
+    Pipe.updateFluidFilter(v)
+  end)
+  table.each(player.surface.find_entities_filtered{name = Config.PIPE_OUT_NAME, area = event.area}, function(v)
+    Pipe.updateFluidFilter(v)
+  end)
 end)
 
 script.on_event(defines.events.on_player_dropped_item, function(event)

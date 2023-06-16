@@ -93,25 +93,8 @@ end)
 
 function onBuiltEntity(event)
   local entity = event.created_entity
-  if entity.name == Config.CHEST_NAME then onBuiltChest(event, entity)
-  else onBuiltPipe(event, entity)
-  end
-end
-
-function onBuiltChest(event, entity)
-  local tagFilter = event.tags and event.tags["filter"]   -- Extract filter from a blueprint tag
-
-  if entity.link_id == 0 and tagFilter == nil and global.lastLinkId == nil then
-      -- Ensure a valid filter for this chest. Will only happen for the first chest placed.
-      for k, v in pairs(game.item_prototypes) do
-        tagFilter = k
-        break
-      end
-  end
-  if tagFilter then
-    Util.setLinkId(entity, Util.getOrCreateId(tagFilter), tagFilter)
-  elseif entity.link_id == 0 then
-    Util.setLinkId(entity, global.lastLinkId, Util.getNameFromId(global.lastLinkId))
+  if entity.name == Config.CHEST_NAME then Chest.onBuiltEntity(event, entity)
+  else Pipe.onBuiltEntity(event, entity)
   end
 end
 
@@ -134,28 +117,8 @@ script.on_event(defines.events.on_gui_opened, function(event)
   local player = game.get_player(event.player_index)
   if player == nil then return end
   if event.entity == nil then return end
-  if event.entity.name == Config.CHEST_NAME then
-    local guiEntity = event.entity
-    local guiLinkId = guiEntity.link_id
-    local guiFilter = Util.getNameFromId(guiLinkId)
-    player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
-    Util.setLinkId(guiEntity, guiLinkId, guiFilter)
-
-    script.on_event(defines.events.on_tick, function(event)
-      -- Reset any changes via the GUIs we can't control (e.g. Link bitmask and manual filtering).
-      player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
-      Util.setLinkId(guiEntity, guiLinkId, guiFilter)
-    end)
-
-    script.on_event(defines.events.on_gui_elem_changed, function(event)
-      local element = event.element
-      if element ~= player.gui.relative.unichestFrame.itemFilter then return end
-      if element.elem_value and element.elem_value ~= "" then
-        -- Don't let them set an empty filter.
-        guiLinkId = Util.getOrCreateId(element.elem_value)
-        guiFilter = element.elem_value
-      end
-    end)
+  if event.entity.name == Config.CHEST_NAME then Chest.onGuiOpened(event, player, event.entity)
+  elseif Config.isPipeName(event.entity.name) then Pipe.onGuiOpened(event, player, event.entity)
   end
 end)
 
@@ -164,35 +127,9 @@ script.on_event(defines.events.on_gui_closed, function(event)
   script.on_event(defines.events.on_gui_elem_changed, nil)
 end)
 
-function buildGui(player)
-  player.gui.relative.add {
-    type = "frame",
-    name = "unichestFrame",
-    direction = "vertical",
-    caption = { "zy-uni.heading" },
-    anchor = {
-      gui = defines.relative_gui_type.linked_container_gui,
-      position = defines.relative_gui_position.right
-    },
-    visible = true
-  }
-  player.gui.relative.unichestFrame.add {
-    type = "choose-elem-button",
-    name = "itemFilter",
-    tooltip = { "zy-uni.chooseElemTooltip" },
-    style = "slot_button",
-    elem_type = "item"
-  }
-end
-
-function destroyGui(player)
-  if player.gui.relative.flcFrame ~= nil then player.gui.relative.flcFrame.destroy() end
-  if player.gui.relative.unichestFrame ~= nil then player.gui.relative.unichestFrame.destroy() end
-end
-
 function initGui(player)
-  destroyGui(player)
-  buildGui(player)
+  Chest.destroyGui(player)
+  Chest.buildGui(player)
 end
 
 script.on_init(function(event)
@@ -201,8 +138,6 @@ script.on_init(function(event)
     initGui(player)
   end
 end)
-
-script.on_nth_tick(nil)
 
 script.on_configuration_changed(function(event)
   for i, player in pairs(game.players) do

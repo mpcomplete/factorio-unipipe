@@ -1,4 +1,5 @@
 Config = require("config")
-require("scripts/control")
+require("scripts/main")
+require("scripts/unichest")
 require("scripts/unipipe")
 require("scripts/unitool")

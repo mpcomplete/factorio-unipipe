@@ -25,6 +25,7 @@ function Util.getNameFromId(id)
   return nil
 end
 
+-- TODO: move to Chest
 function Util.setLinkId(entity, id, name)
   global.lastLinkId = id
 
@@ -84,6 +85,7 @@ function addChestInventoryCycle(cycle, entity, isOutput)
    end
 end
 
+-- TODO: move to Chest
 function Util.setChestFilter(dest, source, isOutput)
   if source == nil or dest == nil or not source.valid or not dest.valid then return end
   if dest.name ~= Config.CHEST_NAME then return end

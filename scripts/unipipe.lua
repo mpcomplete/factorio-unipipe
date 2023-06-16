@@ -4,7 +4,9 @@ local table = require('__stdlib__/stdlib/utils/table')
 local Direction = require('__stdlib__/stdlib/area/direction')
 local Util = require('util')
 
-function onBuiltPipe(event, entity)
+Pipe = {}
+
+function Pipe.onBuiltEntity(event, entity)
   local isInput = entity.name == Config.PIPE_IN_NAME
   game.print('built pipe ' .. entity.unit_number)
   local pos = Position.new(entity.position)
@@ -34,6 +36,9 @@ function onBuiltPipe(event, entity)
   global.hiddenEntities = global.hiddenEntities or {}
   global.hiddenEntities[entity.unit_number] = { assembler = assembler, inserter = inserter, chest = chest }
   script.register_on_entity_destroyed(entity)
+end
+
+function Pipe.onGuiOpened(event, player, entity)
 end
 
 script.on_event(defines.events.on_entity_destroyed, function(event)

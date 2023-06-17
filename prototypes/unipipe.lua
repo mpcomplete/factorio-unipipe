@@ -92,28 +92,27 @@ end
 local function createItemEntityRecipe(protoName, isInput)
   --- Item ---
 
-  local storageSize = settings.startup["zy-unipipe-storage-size"].value
+  local icon = isInput and "__Unipipe__/graphics/unipipe-fill.png" or "__Unipipe__/graphics/unipipe-extract.png"
   local item = table.merge(table.deepcopy(data.raw["item"]["pump"]), {
     type = "item",
     name = protoName,
-    -- icon = icon,  -- TODO
-    -- icon_size = 64,
-    -- icon_mipmaps = 4,
+    icon = icon,
+    icon_size = 64,
+    icon_mipmaps = 4,
     subgroup = "storage",
     order = "b[fluid]-a[" .. protoName .. "]",
     place_result = protoName,
-    stack_size = math.ceil(storageSize / 200)
+    stack_size = 50
   })
 
   --- Entity ---
 
-  local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
   local endcaps = makeEndcaps(isInput)
   local entity = table.merge(table.deepcopy(data.raw["pipe-to-ground"]["pipe-to-ground"]), {
     name = protoName,
-    icon = pumpBase.icon,
-    icon_size = pumpBase.icon_size,
-    icon_mipmaps = pumpBase.icon_mipmaps,
+    icon = icon,
+    icon_size = 64,
+    icon_mipmaps = 4,
     minable = { mining_time = 0.2, result = protoName },
     gui_mode = "all",
     corpse = "",
@@ -237,11 +236,12 @@ local function createItemEntityRecipe(protoName, isInput)
   assembler.module_specification = nil
   assembler.allowed_effects = nil
 
+  local storageSize = settings.startup["zy-unipipe-storage-size"].value
   local baseChest = data.raw["linked-container"]["linked-chest"]
   local chest = table.dictionary_combine(table.deepcopy(baseChest), baseHidden, {
     name = Config.HIDDEN_CHEST_NAME,
     picture = util.empty_sprite(1),
-    inventory_size = 48,
+    inventory_size = math.ceil(storageSize / 200),
     inventory_type = "with_filters_and_bar",
     gui_mode = "all",
   })

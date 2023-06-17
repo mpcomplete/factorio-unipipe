@@ -40,7 +40,6 @@ script.on_load(function(event)
 end)
 
 script.on_configuration_changed(function(event)
-  global.nameToId = {}
   for i, player in pairs(game.players) do
     initGui(player)
   end

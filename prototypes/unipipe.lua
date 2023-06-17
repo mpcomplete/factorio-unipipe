@@ -195,7 +195,7 @@ local function createItemEntityRecipe(protoName, isInput)
       flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       collision_mask = {},
-      -- selection_box = {{0,0}, {0,0}},
+      selection_box = {{0,0}, {0,0}},
       order = "z",
       max_health = 2147483648,
       energy_source = { type = "void" },

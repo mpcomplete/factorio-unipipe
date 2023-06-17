@@ -1,8 +1,11 @@
-# Factorio Unichest and Unipipe
+# Factorio Unipipe
 
-This is a mod for [Factorio](http://factorio.com) that adds a container type
-Filtered Linked Chest, each of which globally shares contents with every other
-chest of a specified item type.
+(see also my Unichest mod: https://mods.factorio.com/mod/Unichest)
+
+This is a mod for [Factorio](http://factorio.com) that implements a type of
+"Linked pipe". It adds 2 pump entities - Unipipe Filler and Unipipe Extracter
+- which fill or extract from a per-fluid globally shared fluid storage, one per
+fluid type.
 
 ![Demonstration 1](action1.gif)
 ![Demonstration 2](action2.gif)
@@ -11,19 +14,14 @@ chest of a specified item type.
 # How to use
 
 Unlock the technology (requirements configurable in Mod Settings -> Startup)
-to access the recipe to craft a Filtered Linked Chest. Crafting cost is also
-configurable in Mod Settings -> Startup, along with inventory size.
+to access the recipe to craft the Unipipes. Crafting cost is also
+configurable in Mod Settings -> Startup, along with storage size.
 
-Once placed, the chest is able to hold a single item type. All chests for a
-given item type are "linked", meaning putting e.g. iron ore in one chest will
-make it accessible in every chest set to iron ore. The item filter can be set
-in several ways:
-* In the chest GUI by picking the item type manually
-* Copy-pasting from another Filtered Linked Chest, assembling machine (anything
-  with a recipe), furnace, burner, rocket silo, lab, or mining drill. Shift +
-  right-click to paste inputs, shift + alt + right-click to paste outputs.
-  Recipes with multiple inputs/outputs will be cycled through for subsequent
-  pastes from the same machine.
-* Using the area-select tool. Any chest with a neighboring inserter or mining
-  drill will set its recipe to the input or output of the connected entity in
-  the same fashion as copy-pasting.
+Once placed, connect a Filler pump to a fluid network to fill the global storage
+with the connected fluid type. Elsewhere, connect an Extracter pump to extract
+that fluid from global storage.
+
+The fluid type to fill/extract is automatically determined by from the pipes
+connected to it. If this should fail (it can be finnicky), you can either
+reconstruct the pump, set the fluid type in the pump's GUI, or use Unichest's
+selection tool to reset the fluid filter.

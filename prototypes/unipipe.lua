@@ -242,7 +242,7 @@ local function createItemEntityRecipe(protoName, isInput)
   local chest = table.dictionary_combine(table.deepcopy(baseChest), baseHidden, {
     name = Config.HIDDEN_CHEST_NAME,
     picture = util.empty_sprite(1),
-    inventory_size = math.ceil(storageSize / 200),
+    inventory_size = math.ceil(storageSize / 20),
     inventory_type = "with_filters_and_bar",
     gui_mode = "all",
   })
@@ -252,17 +252,18 @@ local function createItemEntityRecipe(protoName, isInput)
   local crafting_cost = settings.startup["zy-unipipe-crafting-cost"].value
   local ingredients = {
       --crafting_cost == "easy" and {
-        { "iron-plate", 20 }
+        { "iron-gear", 1 },
+        { "electronic-circuit", 1 },
+        { "pipe", 1 },
   }
   ingredients =
       crafting_cost == "medium" and {
         { "pump",               2 },
-        { "iron-plate",         20 },
-        { "electronic-circuit", 10 },
+        { "storage-tank",       5 },
+        { "advanced-circuit",   5 },
       } or crafting_cost == "hard" and {
-        { "pump",               10 },
-        { "iron-plate",         100 },
-        { "copper-plate",       100 },
+        { "pump",               2 },
+        { "storage-tank",       50 },
         { "processing-unit",    10 }
       } or ingredients
   local recipe = {

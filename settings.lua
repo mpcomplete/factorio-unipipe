@@ -4,9 +4,10 @@ data:extend({
     name = "zy-unipipe-storage-size",
     order = "c",
     setting_type = "startup",
-    default_value = 42*200,
-    minimum_value = 200,
-    maximum_value = 4000*200,
+    -- 20k per hidden chest slot (see data-updates.lua)
+    minimum_value = 20,
+    maximum_value = 20*4000,
+    default_value = 20*42,
   },
   {
     type = "string-setting",

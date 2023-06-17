@@ -2,12 +2,63 @@ local table = require('__stdlib__/stdlib/utils/table')
 require("__base__/prototypes/entity/pipecovers")
 
 local function makeEndcaps(isInput)
-  local pipeToGround = table.deepcopy(data.raw["pipe-to-ground"]["pipe-to-ground"])
   local pictures = {
-    north = pipeToGround.pictures.up,
-    south = pipeToGround.pictures.down,
-    east = pipeToGround.pictures.right,
-    west = pipeToGround.pictures.left,
+    north = {
+      filename = "__Unichest__/graphics/hr-pipe-to-ground-up.png",
+      priority = "high",
+      width = 128,
+      height = 128,
+      scale = 0.5,
+      hr_version = {
+        filename = "__Unichest__/graphics/hr-pipe-to-ground-up.png",
+        priority = "extra-high",
+        width = 128,
+        height = 128,
+        scale = 0.5
+      }
+    },
+    south = {
+      filename = "__Unichest__/graphics/hr-pipe-to-ground-down.png",
+      priority = "high",
+      width = 128,
+      height = 128,
+      scale = 0.5,
+      hr_version = {
+        filename = "__Unichest__/graphics/hr-pipe-to-ground-down.png",
+        priority = "extra-high",
+        width = 128,
+        height = 128,
+        scale = 0.5
+      }
+    },
+    west = {
+      filename = "__Unichest__/graphics/hr-pipe-to-ground-left.png",
+      priority = "high",
+      width = 128,
+      height = 128,
+      scale = 0.5,
+      hr_version = {
+        filename = "__Unichest__/graphics/hr-pipe-to-ground-left.png",
+        priority = "extra-high",
+        width = 128,
+        height = 128,
+        scale = 0.5
+      }
+    },
+    east = {
+      filename = "__Unichest__/graphics/hr-pipe-to-ground-right.png",
+      priority = "high",
+      width = 128,
+      height = 128,
+      scale = 0.5,
+      hr_version = {
+        filename = "__Unichest__/graphics/hr-pipe-to-ground-right.png",
+        priority = "extra-high",
+        width = 128,
+        height = 128,
+        scale = 0.5
+      }
+    }
   }
   local shifts = {
     north = util.by_pixel(0, 44),
@@ -56,72 +107,6 @@ local function createItemEntityRecipe(protoName, isInput)
 
   local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
   local endcaps = makeEndcaps(isInput)
-  -- local endcaps = {
-  --   north = {
-  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-down.png",
-  --     priority = "high",
-  --     width = 64,
-  --     height = 64,
-  --     shift = util.by_pixel(82, 0),
-  --     hr_version =
-  --     {
-  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-down.png",
-  --       priority = "extra-high",
-  --       width = 128,
-  --       height = 128,
-  --       scale = 0.5,
-  --       shift = util.by_pixel(82, 0),
-  --     }
-  --   },
-  --   south = {
-  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-up.png",
-  --     priority = "high",
-  --     width = 64,
-  --     height = 64,
-  --     shift = util.by_pixel(83.5, 0),
-  --     hr_version =
-  --     {
-  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-up.png",
-  --       priority = "extra-high",
-  --       width = 128,
-  --       height = 128,
-  --       scale = 0.5,
-  --       shift = util.by_pixel(83.5, 0),
-  --     }
-  --   },
-  --   east = {
-  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-right.png",
-  --     priority = "high",
-  --     width = 64,
-  --     height = 64,
-  --     shift = util.by_pixel(-44, 0),
-  --     hr_version =
-  --     {
-  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-right.png",
-  --       priority = "extra-high",
-  --       width = 128,
-  --       height = 128,
-  --       scale = 0.5,
-  --       shift = util.by_pixel(-44, 0),
-  --     }
-  --   },
-  --   west = {
-  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-left.png",
-  --     priority = "high",
-  --     width = 64,
-  --     height = 64,
-  --     shift = util.by_pixel(44, 0),
-  --     hr_version =
-  --     {
-  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-left.png",
-  --       priority = "extra-high",
-  --       width = 128,
-  --       height = 128,
-  --       scale = 0.5,
-  --       shift = util.by_pixel(44, 0),
-  --     }
-  --   },
-  -- }
   local entity = table.merge(table.deepcopy(data.raw["simple-entity-with-force"]["simple-entity-with-force"]), {
     name = protoName,
     icon = pumpBase.icon,
@@ -183,22 +168,6 @@ local function createItemEntityRecipe(protoName, isInput)
           }
         },
         endcaps.east
-        -- {
-        --   filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-right.png",
-        --   priority = "high",
-        --   width = 64,
-        --   height = 64, --, shift = {0.1, 0.1}
-        --   shift = util.by_pixel(-44, 0),
-        --   hr_version =
-        --   {
-        --     filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-right.png",
-        --     priority = "extra-high",
-        --     width = 128,
-        --     height = 128,
-        --     scale = 0.5,
-        --     shift = util.by_pixel(-44, 0),
-        --   }
-        -- }
       }},
       west = { layers = {
         {

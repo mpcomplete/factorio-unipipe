@@ -1,4 +1,40 @@
 local table = require('__stdlib__/stdlib/utils/table')
+require("__base__/prototypes/entity/pipecovers")
+
+local function makeEndcaps(isInput)
+  local pipeToGround = table.deepcopy(data.raw["pipe-to-ground"]["pipe-to-ground"])
+  local pictures = {
+    north = pipeToGround.pictures.up,
+    south = pipeToGround.pictures.down,
+    east = pipeToGround.pictures.right,
+    west = pipeToGround.pictures.left,
+  }
+  local shifts = {
+    north = util.by_pixel(0, 44),
+    south = util.by_pixel(0, -44),
+    east = util.by_pixel(-44, 0),
+    west = util.by_pixel(44, 0)
+  }
+  if isInput then
+    shifts = {
+      north = shifts.south,
+      south = shifts.north,
+      east = shifts.west,
+      west = shifts.east
+    }
+    pictures = {
+      north = pictures.south,
+      south = pictures.north,
+      east = pictures.west,
+      west = pictures.east
+    }
+  end
+  for k, v in pairs(shifts) do
+    pictures[k].shift = v
+    pictures[k].hr_version.shift = v
+  end
+  return pictures
+end
 
 local function createItemEntityRecipe(protoName, isInput)
   --- Item ---
@@ -18,7 +54,74 @@ local function createItemEntityRecipe(protoName, isInput)
 
   --- Entity ---
 
-  local pumpBase = data.raw["pump"]["pump"]
+  local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
+  local endcaps = makeEndcaps(isInput)
+  -- local endcaps = {
+  --   north = {
+  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-down.png",
+  --     priority = "high",
+  --     width = 64,
+  --     height = 64,
+  --     shift = util.by_pixel(82, 0),
+  --     hr_version =
+  --     {
+  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-down.png",
+  --       priority = "extra-high",
+  --       width = 128,
+  --       height = 128,
+  --       scale = 0.5,
+  --       shift = util.by_pixel(82, 0),
+  --     }
+  --   },
+  --   south = {
+  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-up.png",
+  --     priority = "high",
+  --     width = 64,
+  --     height = 64,
+  --     shift = util.by_pixel(83.5, 0),
+  --     hr_version =
+  --     {
+  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-up.png",
+  --       priority = "extra-high",
+  --       width = 128,
+  --       height = 128,
+  --       scale = 0.5,
+  --       shift = util.by_pixel(83.5, 0),
+  --     }
+  --   },
+  --   east = {
+  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-right.png",
+  --     priority = "high",
+  --     width = 64,
+  --     height = 64,
+  --     shift = util.by_pixel(-44, 0),
+  --     hr_version =
+  --     {
+  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-right.png",
+  --       priority = "extra-high",
+  --       width = 128,
+  --       height = 128,
+  --       scale = 0.5,
+  --       shift = util.by_pixel(-44, 0),
+  --     }
+  --   },
+  --   west = {
+  --     filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-left.png",
+  --     priority = "high",
+  --     width = 64,
+  --     height = 64,
+  --     shift = util.by_pixel(44, 0),
+  --     hr_version =
+  --     {
+  --       filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-left.png",
+  --       priority = "extra-high",
+  --       width = 128,
+  --       height = 128,
+  --       scale = 0.5,
+  --       shift = util.by_pixel(44, 0),
+  --     }
+  --   },
+  -- }
   local entity = table.merge(table.deepcopy(data.raw["simple-entity-with-force"]["simple-entity-with-force"]), {
     name = protoName,
     icon = pumpBase.icon,
@@ -31,9 +134,89 @@ local function createItemEntityRecipe(protoName, isInput)
     selecttable_in_game = true,
     collision_box = {{-0.29, -0.9}, {0.29, 0.9}},
     selection_box = {{-0.5, -1}, {0.5, 1}},
-    picture = pumpBase.animations,
+    picture = {
+      north = { layers = {
+        {
+          filename = "__Unichest__/graphics/hr-unipipe-north.png",
+          width = 88,
+          height = 164,
+          scale = 0.5,
+          shift = util.by_pixel(4, 0),
+          hr_version = {
+            filename = "__Unichest__/graphics/hr-unipipe-north.png",
+            width = 88,
+            height = 164,
+            scale = 0.5,
+            shift = util.by_pixel(4, 0),
+          }
+        },
+        endcaps.north
+      }},
+      south = { layers = {
+        {
+          filename = "__Unichest__/graphics/hr-unipipe-south.png",
+          width = 88,
+          height = 167,
+          scale = 0.5,
+          shift = util.by_pixel(4, 0),
+          hr_version = {
+            filename = "__Unichest__/graphics/hr-unipipe-south.png",
+            width = 88,
+            height = 167,
+            scale = 0.5,
+            shift = util.by_pixel(4, 0),
+          }
+        },
+        endcaps.south
+      }},
+      east = { layers = {
+        {
+          filename = "__Unichest__/graphics/hr-unipipe-east.png",
+          width = 144,
+          height = 105,
+          scale = 0.5,
+          hr_version = {
+            filename = "__Unichest__/graphics/hr-unipipe-east.png",
+            width = 144,
+            height = 105,
+            scale = 0.5,
+          }
+        },
+        endcaps.east
+        -- {
+        --   filename = "__base__/graphics/entity/pipe-to-ground/pipe-to-ground-right.png",
+        --   priority = "high",
+        --   width = 64,
+        --   height = 64, --, shift = {0.1, 0.1}
+        --   shift = util.by_pixel(-44, 0),
+        --   hr_version =
+        --   {
+        --     filename = "__base__/graphics/entity/pipe-to-ground/hr-pipe-to-ground-right.png",
+        --     priority = "extra-high",
+        --     width = 128,
+        --     height = 128,
+        --     scale = 0.5,
+        --     shift = util.by_pixel(-44, 0),
+        --   }
+        -- }
+      }},
+      west = { layers = {
+        {
+          filename = "__Unichest__/graphics/hr-unipipe-west.png",
+          width = 144,
+          height = 105,
+          scale = 0.5,
+          hr_version = {
+            filename = "__Unichest__/graphics/hr-unipipe-west.png",
+            width = 144,
+            height = 105,
+            scale = 0.5,
+          }
+        },
+        endcaps.west
+      }},
+    }
   })
-  -- entity.picture = nil
 
   --- Hidden entities ---
 
@@ -56,13 +239,13 @@ local function createItemEntityRecipe(protoName, isInput)
     pickup_position = {0, -.8},
     insert_position = {0, .8},
     draw_inserter_arrow = false,
-    -- hand_base_picture = util.empty_sprite(1),
-    -- hand_closed_picture = util.empty_sprite(1),
-    -- hand_open_picture = util.empty_sprite(1),
-    -- hand_base_shadow = util.empty_sprite(1),
-    -- hand_closed_shadow = util.empty_sprite(1),
-    -- hand_open_shadow = util.empty_sprite(1),
-    -- platform_picture = util.empty_sprite(1),
+    hand_base_picture = util.empty_sprite(1),
+    hand_closed_picture = util.empty_sprite(1),
+    hand_open_picture = util.empty_sprite(1),
+    hand_base_shadow = util.empty_sprite(1),
+    hand_closed_shadow = util.empty_sprite(1),
+    hand_open_shadow = util.empty_sprite(1),
+    platform_picture = util.empty_sprite(1),
   })
   inserter.minable = nil
 
@@ -77,14 +260,14 @@ local function createItemEntityRecipe(protoName, isInput)
   assembler.fluid_boxes[1].pipe_connections[1].position = {0, -1.5}
   assembler.fluid_boxes[2].pipe_connections[1].position = {0, 1.5}
   assembler.minable = nil
-  -- assembler.animation = nil
+  assembler.animation = nil
   assembler.module_specification = nil
   assembler.allowed_effects = nil
 
   local baseChest = data.raw["linked-container"]["linked-chest"]
   local chest = table.dictionary_combine(table.deepcopy(baseChest), baseHidden, {
     name = Config.HIDDEN_CHEST_NAME,
-    -- picture = util.empty_sprite(1),
+    picture = util.empty_sprite(1),
     inventory_size = 48,
     inventory_type = "with_filters_and_bar",
     gui_mode = "all",

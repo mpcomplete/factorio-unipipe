@@ -191,10 +191,10 @@ local function createItemEntityRecipe(protoName, isInput)
 
   local baseInserter = data.raw["inserter"]["stack-filter-inserter"]
   local baseHidden = {
-      -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
-      flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+      flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+      -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       collision_mask = {},
-      -- selection_box = {{0,0}, {0,0}},
+      selection_box = {{0,0}, {0,0}},
       order = "z",
       max_health = 2147483648,
       energy_source = { type = "void" },
@@ -220,6 +220,7 @@ local function createItemEntityRecipe(protoName, isInput)
 
   local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
   local assembler = table.dictionary_combine(table.deepcopy(baseAssembler), baseHidden, {
+    flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
     name = Config.HIDDEN_ASSEMBLER_NAME,
     collision_box = {{-0.6, -0.6}, {0.6, 0.6}},
     drawing_box = {{0,0}, {0,0}},
@@ -242,19 +243,7 @@ local function createItemEntityRecipe(protoName, isInput)
     gui_mode = "all",
   })
   chest.minable = nil
-  -- function logtable(name, t)
-  --   for k,v in pairs(t) do
-  --     if type(v) == "table" then
-  --       logtable(name .. "." .. k, v)
-  --     elseif type(v) == "string" or type(v) == "number" then
-  --       log(name .. "." .. k .. ": " .. v)
-  --     else
-  --       log(name .. "." .. k .. ": some type=" .. type(v))
-  --     end
-  --   end
-  -- end
-  -- logtable("asm", assembler)
-  
+
   --- Recipe ---
   local crafting_cost = settings.startup["zy-uni-crafting-cost"].value
   local ingredients = {

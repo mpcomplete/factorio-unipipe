@@ -1,6 +1,7 @@
 local Config = require("config")
 
 local fluid_per_item = 100
+local fluid_item_stack_size = 200
 
 -- Generates a barrel item with the provided name and fluid definition using the provided empty barrel stack size
 local function createFluidItem(name, fluid)
@@ -23,7 +24,7 @@ local function createFluidItem(name, fluid)
     icon_mipmaps = icon.icon_mipmaps,
     subgroup = "barrel",
     order = "b[" .. name .. "]",
-    stack_size = 1000,
+    stack_size = fluid_item_stack_size,
   }
 
   data:extend({result})

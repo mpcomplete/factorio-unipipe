@@ -118,6 +118,7 @@ function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
   for i = 1, #fluidbox do
     if fluidbox.get_fluid_system_id(i) == systemId then
       if not fluidType and not isUnipipe and fluidbox.get_filter(i) then fluidType = fluidbox.get_filter(i).name end
+      if not fluidType and not isUnipipe and fluidbox[i] then fluidType = fluidbox[i].name end
       for _, connection in pairs(fluidbox.get_connections(i) or {}) do
         local rv = findConnectedUnipipes(connection, systemId, unipipes, visited)
         fluidType = fluidType or rv
@@ -194,14 +195,8 @@ function Pipe.buildGui(player)
       gui = defines.relative_gui_type.pipe_gui,
       position = defines.relative_gui_position.bottom
     },
-    style = "inner_frame_in_outer_frame",
+    style = "statistics_frame",
     visible = false
-  }
-  player.gui.relative.unipipeFrame.add {
-    type = "label",
-    name = "contentsHeading",
-    caption = { "zy-unipipe.contentsHeading" },
-    style = "heading_3_label",
   }
   local contentsRow = player.gui.relative.unipipeFrame.add {
     type = "flow",
@@ -227,6 +222,14 @@ function Pipe.buildGui(player)
     name = "amountBar",
     value = 0,
   }
+  local note = player.gui.relative.unipipeFrame.add {
+    type = "label",
+    name = "note",
+    single_line = false,
+    caption = { "zy-unipipe.note" },
+    style = "zy-unipipe-note",
+  }
+  note.style.horizontally_stretchable = true  -- why in fuck's sake is this not settable in the data stage?
 end
 
 function Pipe.destroyGui(player)

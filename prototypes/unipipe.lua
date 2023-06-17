@@ -1,5 +1,7 @@
+-- TODO
+-- item/research/tech icons
+
 local table = require('__stdlib__/stdlib/utils/table')
-require("__base__/prototypes/entity/pipecovers")
 
 local function makeEndcaps(isInput)
   local pictures = {
@@ -90,17 +92,17 @@ end
 local function createItemEntityRecipe(protoName, isInput)
   --- Item ---
 
-  -- local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
+  local storageSize = settings.startup["zy-unipipe-storage-size"].value
   local item = table.merge(table.deepcopy(data.raw["item"]["pump"]), {
     type = "item",
     name = protoName,
-    -- icon = icon,
+    -- icon = icon,  -- TODO
     -- icon_size = 64,
     -- icon_mipmaps = 4,
     subgroup = "storage",
     order = "b[fluid]-a[" .. protoName .. "]",
     place_result = protoName,
-    stack_size = 50
+    stack_size = math.ceil(storageSize / 200)
   })
 
   --- Entity ---
@@ -246,7 +248,7 @@ local function createItemEntityRecipe(protoName, isInput)
   chest.minable = nil
 
   --- Recipe ---
-  local crafting_cost = settings.startup["zy-uni-crafting-cost"].value
+  local crafting_cost = settings.startup["zy-unipipe-crafting-cost"].value
   local ingredients = {
       --crafting_cost == "easy" and {
         { "iron-plate", 20 }
@@ -281,7 +283,7 @@ local function create(protoName, protoNameIn, protoNameOut)
 
   --- Technology ---
 
-  local research = settings.startup["zy-uni-required-research"].value
+  local research = settings.startup["zy-unipipe-required-research"].value
   local tech = {
       -- research == "automation" and {
         count = 10,
@@ -405,4 +407,4 @@ local function create(protoName, protoNameIn, protoNameOut)
   data:extend({ technology })
 end
 
-create(Config.PIPE_PREFIX, Config.PIPE_IN_NAME, Config.PIPE_OUT_NAME)
+create(Config.PIPE_PREFIX, Config.PIPE_FILL_NAME, Config.PIPE_EXTRACT_NAME)

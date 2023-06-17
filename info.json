@@ -1,12 +1,12 @@
 {
-  "name": "Unichest",
+  "name": "Unipipe",
   "version": "1.0.0",
-  "title": "Unichest and Unipipe",
+  "title": "Unipipe",
   "author": "zysnarch",
   "factorio_version": "1.1",
   "dependencies": [
     "base >= 1.1",
     "stdlib >= 1.4.8"
   ],
-  "description": "Chests and pipes with globally linked contents, by item/fluid type. Set the filter in the GUI and the contents will be shared among all other unichests/unipipes with the same filter. Includes convenience tools to set the filter based on connected assemblers/miners/furnaces/etc (either by shift-click paste or provided selection tool)."
+  "description": "Linked pipes that fill or extract from a single globally linked storage, one per fluid type. Set the fluid type in the GUI or automatically based on pipe connections and the contents will be shared among all other unipipes with that fluid type. Pairs well with Unichest mod and its included selection tool for setting fluid filters."
 }

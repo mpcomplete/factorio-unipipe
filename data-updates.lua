@@ -1,9 +1,10 @@
 local Config = require("config")
 
+-- 20000 fluid per slot (200*100)
 local fluid_per_item = 100
 local fluid_item_stack_size = 200
 
--- Generates a barrel item with the provided name and fluid definition using the provided empty barrel stack size
+-- Generates a fluid item with the provided name and fluid definition using the provided empty barrel stack size
 local function createFluidItem(name, fluid)
   local icon = fluid.icon and {
     icon = fluid.icon,
@@ -31,7 +32,7 @@ local function createFluidItem(name, fluid)
   return result
 end
 
--- Creates a recipe to fill the provided barrel item with the provided fluid
+-- Creates a recipe to fill the provided fluid item with the provided fluid
 local function createFillRecipe(item, fluid)
   local recipe = {
     type = "recipe",
@@ -62,12 +63,12 @@ local function createFillRecipe(item, fluid)
   return recipe
 end
 
--- Creates a recipe to empty the provided full barrel item producing the provided fluid
-local function createEmptyRecipe(item, fluid)
+-- Creates a recipe to extract the provided fluid item producing the provided fluid
+local function createExtractRecipe(item, fluid)
   local recipe = {
     type = "recipe",
-    name = Config.getFluidEmptyRecipe(fluid.name),
-    localised_name = {"recipe-name.zy-unipipe-empty", fluid.localised_name or {"fluid-name." .. fluid.name}},
+    name = Config.getFluidExtractRecipe(fluid.name),
+    localised_name = {"recipe-name.zy-unipipe-extract", fluid.localised_name or {"fluid-name." .. fluid.name}},
     category = "crafting-with-fluid",
     subgroup = "empty-barrel",
     order = "c[empty-" .. item.name .. "]",
@@ -96,7 +97,7 @@ end
 local function processFluid(fluid)
   local item = createFluidItem(Config.getFluidItem(fluid.name), fluid)
   createFillRecipe(item, fluid)
-  createEmptyRecipe(item, fluid)
+  createExtractRecipe(item, fluid)
 end
 
 for _, fluid in pairs(data.raw["fluid"] or {}) do

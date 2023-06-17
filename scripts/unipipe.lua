@@ -1,5 +1,4 @@
 local Position = require('__stdlib__/stdlib/area/position')
-local Area = require('__stdlib__/stdlib/area/area')
 local table = require('__stdlib__/stdlib/utils/table')
 local Direction = require('__stdlib__/stdlib/area/direction')
 local Util = require('util')
@@ -16,13 +15,13 @@ function getDefaultFluidName()
 end
 
 function Pipe.onBuiltEntity(event, entity)
-  if entity.name == Config.PIPE_IN_NAME or entity.name == Config.PIPE_OUT_NAME then Pipe.onBuiltPipe(event, entity)
+  if entity.name == Config.PIPE_FILL_NAME or entity.name == Config.PIPE_EXTRACT_NAME then Pipe.onBuiltPipe(event, entity)
   elseif entity.fluidbox and entity.fluidbox.valid and #entity.fluidbox > 0 then Pipe.onBuiltFluidbox(event, entity)
   end
 end
 
 function Pipe.onBuiltPipe(event, entity)
-  local isInput = entity.name == Config.PIPE_IN_NAME
+  local isInput = entity.name == Config.PIPE_FILL_NAME
   game.print('built pipe ' .. entity.unit_number)
   local pos = Position.new(entity.position)
   local dir = entity.direction
@@ -86,12 +85,12 @@ end
 function Pipe.setFluidFilter(entity, fluidName)
   local hidden = global.hiddenEntities[entity.unit_number]
   if not hidden then return end
-  local isInput = entity.name == Config.PIPE_IN_NAME
+  local isInput = entity.name == Config.PIPE_FILL_NAME
   local itemName = Config.getFluidItem(fluidName)
-  hidden.assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidEmptyRecipe(fluidName))
+  hidden.assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidExtractRecipe(fluidName))
   hidden.assembler.direction = Direction.opposite(entity.direction)  -- need to set after setting recipe
   hidden.inserter.set_filter(1, itemName)
-  Util.setLinkId(hidden.chest, Util.getOrCreateId(itemName), itemName)
+  Util.setChestFilter(hidden.chest, itemName)
 end
 
 function updateUnipipesForSystem(fluidbox, systemId)

@@ -1,5 +1,7 @@
 local Config = {}
 
+Config.CHEST_NAME = "zy-unichest"
+Config.TOOL_NAME = "zy-unitool"
 Config.PIPE_PREFIX = "zy-unipipe"
 Config.PIPE_FILL_NAME = Config.PIPE_PREFIX .. "-fill"
 Config.PIPE_EXTRACT_NAME = Config.PIPE_PREFIX .. "-extract"

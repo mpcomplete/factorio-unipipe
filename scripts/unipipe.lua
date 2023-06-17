@@ -6,6 +6,20 @@ local util = require("__core__/lualib/util")
 
 Pipe = {}
 
+-- Support for Unichest selection tool.
+script.on_event(defines.events.on_player_selected_area, function(event)
+  if event.item ~= Config.TOOL_NAME then return end
+
+  local player = game.players[event.player_index]
+
+  table.each(player.surface.find_entities_filtered{name = Config.PIPE_FILL_NAME, area = event.area}, function(v)
+    Pipe.updateFluidFilter(v)
+  end)
+  table.each(player.surface.find_entities_filtered{name = Config.PIPE_EXTRACT_NAME, area = event.area}, function(v)
+    Pipe.updateFluidFilter(v)
+  end)
+end)
+
 function getDefaultFluidName()
   if game.fluid_prototypes["water"] then return "water" end
   for k,v in pairs(game.fluid_prototypes) do

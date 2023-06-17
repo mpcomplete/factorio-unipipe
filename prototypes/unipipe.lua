@@ -6,13 +6,13 @@ local table = require('__stdlib__/stdlib/utils/table')
 local function makeEndcaps(isInput)
   local pictures = {
     north = {
-      filename = "__Unichest__/graphics/hr-pipe-to-ground-up.png",
+      filename = "__Unipipe__/graphics/hr-pipe-to-ground-up.png",
       priority = "high",
       width = 128,
       height = 128,
       scale = 0.5,
       hr_version = {
-        filename = "__Unichest__/graphics/hr-pipe-to-ground-up.png",
+        filename = "__Unipipe__/graphics/hr-pipe-to-ground-up.png",
         priority = "extra-high",
         width = 128,
         height = 128,
@@ -20,13 +20,13 @@ local function makeEndcaps(isInput)
       }
     },
     south = {
-      filename = "__Unichest__/graphics/hr-pipe-to-ground-down.png",
+      filename = "__Unipipe__/graphics/hr-pipe-to-ground-down.png",
       priority = "high",
       width = 128,
       height = 128,
       scale = 0.5,
       hr_version = {
-        filename = "__Unichest__/graphics/hr-pipe-to-ground-down.png",
+        filename = "__Unipipe__/graphics/hr-pipe-to-ground-down.png",
         priority = "extra-high",
         width = 128,
         height = 128,
@@ -34,13 +34,13 @@ local function makeEndcaps(isInput)
       }
     },
     west = {
-      filename = "__Unichest__/graphics/hr-pipe-to-ground-left.png",
+      filename = "__Unipipe__/graphics/hr-pipe-to-ground-left.png",
       priority = "high",
       width = 128,
       height = 128,
       scale = 0.5,
       hr_version = {
-        filename = "__Unichest__/graphics/hr-pipe-to-ground-left.png",
+        filename = "__Unipipe__/graphics/hr-pipe-to-ground-left.png",
         priority = "extra-high",
         width = 128,
         height = 128,
@@ -48,13 +48,13 @@ local function makeEndcaps(isInput)
       }
     },
     east = {
-      filename = "__Unichest__/graphics/hr-pipe-to-ground-right.png",
+      filename = "__Unipipe__/graphics/hr-pipe-to-ground-right.png",
       priority = "high",
       width = 128,
       height = 128,
       scale = 0.5,
       hr_version = {
-        filename = "__Unichest__/graphics/hr-pipe-to-ground-right.png",
+        filename = "__Unipipe__/graphics/hr-pipe-to-ground-right.png",
         priority = "extra-high",
         width = 128,
         height = 128,
@@ -125,13 +125,13 @@ local function createItemEntityRecipe(protoName, isInput)
     pictures = {
       up = { layers = {
         {
-          filename = "__Unichest__/graphics/hr-unipipe-north.png",
+          filename = "__Unipipe__/graphics/hr-unipipe-north.png",
           width = 88,
           height = 164,
           scale = 0.5,
           shift = util.by_pixel(4, 0),
           hr_version = {
-            filename = "__Unichest__/graphics/hr-unipipe-north.png",
+            filename = "__Unipipe__/graphics/hr-unipipe-north.png",
             width = 88,
             height = 164,
             scale = 0.5,
@@ -142,13 +142,13 @@ local function createItemEntityRecipe(protoName, isInput)
       }},
       down = { layers = {
         {
-          filename = "__Unichest__/graphics/hr-unipipe-south.png",
+          filename = "__Unipipe__/graphics/hr-unipipe-south.png",
           width = 88,
           height = 167,
           scale = 0.5,
           shift = util.by_pixel(4, 0),
           hr_version = {
-            filename = "__Unichest__/graphics/hr-unipipe-south.png",
+            filename = "__Unipipe__/graphics/hr-unipipe-south.png",
             width = 88,
             height = 167,
             scale = 0.5,
@@ -159,12 +159,12 @@ local function createItemEntityRecipe(protoName, isInput)
       }},
       right = { layers = {
         {
-          filename = "__Unichest__/graphics/hr-unipipe-east.png",
+          filename = "__Unipipe__/graphics/hr-unipipe-east.png",
           width = 144,
           height = 105,
           scale = 0.5,
           hr_version = {
-            filename = "__Unichest__/graphics/hr-unipipe-east.png",
+            filename = "__Unipipe__/graphics/hr-unipipe-east.png",
             width = 144,
             height = 105,
             scale = 0.5,
@@ -174,12 +174,12 @@ local function createItemEntityRecipe(protoName, isInput)
       }},
       left = { layers = {
         {
-          filename = "__Unichest__/graphics/hr-unipipe-west.png",
+          filename = "__Unipipe__/graphics/hr-unipipe-west.png",
           width = 144,
           height = 105,
           scale = 0.5,
           hr_version = {
-            filename = "__Unichest__/graphics/hr-unipipe-west.png",
+            filename = "__Unipipe__/graphics/hr-unipipe-west.png",
             width = 144,
             height = 105,
             scale = 0.5,
@@ -255,16 +255,14 @@ local function createItemEntityRecipe(protoName, isInput)
   }
   ingredients =
       crafting_cost == "medium" and {
-        { "steel-chest",        10 },
+        { "pump",               2 },
+        { "iron-plate",         20 },
+        { "electronic-circuit", 10 },
+      } or crafting_cost == "hard" and {
+        { "pump",               10 },
         { "iron-plate",         100 },
         { "copper-plate",       100 },
-        { "electronic-circuit", 50 },
-      } or crafting_cost == "hard" and {
-        { "steel-chest",      20 },
-        { "iron-plate",       100 },
-        { "copper-plate",     100 },
-        { "advanced-circuit", 50 },
-        { "processing-unit",  10 }
+        { "processing-unit",    10 }
       } or ingredients
   local recipe = {
     type = "recipe",

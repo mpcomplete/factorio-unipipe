@@ -3,8 +3,8 @@
 (see also my Unichest mod: https://mods.factorio.com/mod/Unichest)
 
 This is a mod for [Factorio](http://factorio.com) that implements a type of
-"Linked pipe". It adds 2 pump entities - Unipipe Filler and Unipipe Extracter
-- which fill or extract from a per-fluid globally shared fluid storage, one per
+"Linked pipe". It adds 2 pump entities - Unipipe Filler and Unipipe Extracter -
+which fill or extract from a per-fluid globally shared fluid storage, one per
 fluid type.
 
 ![Demonstration](action1.gif)

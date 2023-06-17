@@ -252,17 +252,19 @@ local function createItemEntityRecipe(protoName, isInput)
   local crafting_cost = settings.startup["zy-unipipe-crafting-cost"].value
   local ingredients = {
       --crafting_cost == "easy" and {
-        { "iron-gear", 1 },
+        { "iron-gear-wheel", 1 },
         { "electronic-circuit", 1 },
-        { "pipe", 1 },
+        { "pipe-to-ground", 1 },
   }
   ingredients =
       crafting_cost == "medium" and {
         { "pump",               2 },
+        { "pipe-to-ground",     1 },
         { "storage-tank",       5 },
         { "advanced-circuit",   5 },
       } or crafting_cost == "hard" and {
         { "pump",               2 },
+        { "pipe-to-ground",     1 },
         { "storage-tank",       50 },
         { "processing-unit",    10 }
       } or ingredients

@@ -9,6 +9,7 @@ Config.HIDDEN_INSERTER_NAME = Config.PIPE_PREFIX .. "-hidden-inserter"
 Config.HIDDEN_ASSEMBLER_NAME = Config.PIPE_PREFIX .. "-hidden-assembler"
 Config.HIDDEN_CHEST_NAME = Config.PIPE_PREFIX .. "-hidden-chest"
 Config.HIDDEN_FLUID_PREFIX = Config.PIPE_PREFIX .. "-hidden-fluid"
+Config.NULL_FLUID_NAME = Config.PIPE_PREFIX .. "-null-fluid"
 
 function Config.getFluidItem(fluidName)
   return Config.HIDDEN_FLUID_PREFIX .. "-" .. fluidName

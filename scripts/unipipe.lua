@@ -63,7 +63,7 @@ function Pipe.onBuiltPipe(event, entity)
   global.hiddenAssemblerToPipe = global.hiddenAssemblerToPipe or {}
   global.hiddenAssemblerToPipe[assembler.unit_number] = entity
   script.register_on_entity_destroyed(entity)
-  Pipe.setFluidFilter(entity, getDefaultFluidName())  -- Need to set the assembler's fluid recipe so it has a fluidbox
+  Pipe.setFluidFilter(entity, Config.NULL_FLUID_NAME)  -- Need to set the assembler's fluid recipe so it has a fluidbox
   updateUnipipesForSystem(assembler.fluidbox, assembler.fluidbox.get_fluid_system_id(1))
 end
 

@@ -202,7 +202,7 @@ function Pipe.buildGui(player)
     direction = "vertical",
     caption = { "zy-unipipe.heading" },
     anchor = {
-      gui = defines.relative_gui_type.pipe_gui,
+      gui = defines.relative_gui_type.entity_with_energy_source_gui,
       position = defines.relative_gui_position.bottom
     },
     style = "statistics_frame",

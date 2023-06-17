@@ -108,7 +108,7 @@ local function createItemEntityRecipe(protoName, isInput)
   --- Entity ---
 
   local endcaps = makeEndcaps(isInput)
-  local entity = table.merge(table.deepcopy(data.raw["pipe-to-ground"]["pipe-to-ground"]), {
+  local entity = table.merge(table.deepcopy(data.raw["pump"]["pump"]), {
     name = protoName,
     icon = icon,
     icon_size = 64,
@@ -117,12 +117,13 @@ local function createItemEntityRecipe(protoName, isInput)
     gui_mode = "all",
     corpse = "",
     fluid_box = { pipe_connections = {} },
+    energy_source = { type = "void" },
     selecttable_in_game = true,
     collision_box = {{-0.29, -0.9}, {0.29, 0.9}},
     -- selection_box = {{-0.2, -.2}, {0.2, .2}},
     selection_box = {{-0.5, -1}, {0.5, 1}},
-    pictures = {
-      up = { layers = {
+    animations = {
+      north = { layers = {
         {
           filename = "__Unipipe__/graphics/hr-unipipe-north.png",
           width = 88,
@@ -139,7 +140,7 @@ local function createItemEntityRecipe(protoName, isInput)
         },
         endcaps.north
       }},
-      down = { layers = {
+      south = { layers = {
         {
           filename = "__Unipipe__/graphics/hr-unipipe-south.png",
           width = 88,
@@ -156,7 +157,7 @@ local function createItemEntityRecipe(protoName, isInput)
         },
         endcaps.south
       }},
-      right = { layers = {
+      east = { layers = {
         {
           filename = "__Unipipe__/graphics/hr-unipipe-east.png",
           width = 144,
@@ -171,7 +172,7 @@ local function createItemEntityRecipe(protoName, isInput)
         },
         endcaps.east
       }},
-      left = { layers = {
+      west = { layers = {
         {
           filename = "__Unipipe__/graphics/hr-unipipe-west.png",
           width = 144,

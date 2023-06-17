@@ -1,7 +1,7 @@
 local Position = require('__stdlib__/stdlib/area/position')
 local table = require('__stdlib__/stdlib/utils/table')
 local Direction = require('__stdlib__/stdlib/area/direction')
-local Util = require('util')
+local Chest = require('chestutil')
 local util = require("__core__/lualib/util")
 
 Pipe = {}
@@ -36,7 +36,6 @@ end
 
 function Pipe.onBuiltPipe(event, entity)
   local isInput = entity.name == Config.PIPE_FILL_NAME
-  game.print('built pipe ' .. entity.unit_number)
   local pos = Position.new(entity.position)
   local dir = entity.direction
   -- 3 entities from north to south: assembler -> inserter -> chest
@@ -104,7 +103,7 @@ function Pipe.setFluidFilter(entity, fluidName)
   hidden.assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidExtractRecipe(fluidName))
   hidden.assembler.direction = Direction.opposite(entity.direction)  -- need to set after setting recipe
   hidden.inserter.set_filter(1, itemName)
-  Util.setChestFilter(hidden.chest, itemName)
+  Chest.setItemFilter(hidden.chest, itemName)
 end
 
 function updateUnipipesForSystem(fluidbox, systemId)
@@ -142,12 +141,10 @@ function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
 end
 
 script.on_event(defines.events.on_entity_destroyed, function(event)
-  game.print("destroyed pipe " .. (event.unit_number or "nil"))
   local hidden = global.hiddenEntities[event.unit_number]
   if hidden then
     global.hiddenAssemblerToPipe[hidden.assembler.unit_number] = nil
     for k,v in pairs(hidden) do
-      game.print("killing linked " .. v.name)
       v.destroy()
     end
   end

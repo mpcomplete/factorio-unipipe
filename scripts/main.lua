@@ -93,8 +93,10 @@ end)
 
 function onBuiltEntity(event)
   local entity = event.created_entity
-  Chest.onBuiltEntity(event, entity)
-  Pipe.onBuiltEntity(event, entity)
+  if entity and entity.valid then
+    Chest.onBuiltEntity(event, entity)
+    Pipe.onBuiltEntity(event, entity)
+  end
 end
 
 script.on_event(defines.events.on_built_entity, onBuiltEntity)
@@ -114,7 +116,18 @@ end)
 function initGui(player)
   Chest.destroyGui(player)
   Chest.buildGui(player)
+  Pipe.destroyGui(player)
+  Pipe.buildGui(player)
 end
+
+script.on_event(defines.events.on_gui_opened, function(event)
+  local player = game.get_player(event.player_index)
+  if not player or not event.entity then return end
+  game.print("gui opened " .. event.entity.name)
+  if event.entity.name == Config.CHEST_NAME then Chest.openGui(player, event.entity)
+  elseif Config.isPipeName(event.entity.name) then Pipe.openGui(player, event.entity)
+  end
+end)
 
 script.on_init(function(event)
   global.nameToId = {}

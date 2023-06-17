@@ -3,6 +3,7 @@ local Area = require('__stdlib__/stdlib/area/area')
 local table = require('__stdlib__/stdlib/utils/table')
 local Direction = require('__stdlib__/stdlib/area/direction')
 local Util = require('util')
+local util = require("__core__/lualib/util")
 
 Pipe = {}
 
@@ -147,3 +148,87 @@ script.on_event(defines.events.on_player_rotated_entity, function(event)
     hidden.assembler.direction = Direction.opposite(entity.direction)
   end
 end)
+
+function Pipe.openGui(player, entity)
+  player.gui.relative.unipipeFrame.visible = true
+  script.on_event(defines.events.on_tick, function(event)
+    local hidden = global.hiddenEntities[entity.unit_number]
+    if hidden then
+      local inventory = hidden.chest.get_output_inventory()
+      local itemType = inventory.get_filter(1)
+      local fluidType = Config.getFluidFromFluidItem(itemType)
+      local itemCount = inventory.get_item_count()
+      local fluidPerItem = 100
+      local maxItems = (#inventory * game.item_prototypes[itemType].stack_size)
+      local contentsRow = player.gui.relative.unipipeFrame.contentsRow
+      contentsRow.fluidFilter.elem_value = fluidType
+      contentsRow.fluidFilter.tooltip = game.fluid_prototypes[fluidType].localised_name
+      contentsRow.amountLabel.caption = { "zy-unipipe.amount", util.format_number(itemCount * fluidPerItem, true), util.format_number(maxItems * fluidPerItem, true) }
+      contentsRow.amountBar.value = itemCount / maxItems
+    end
+  end)
+
+  script.on_event(defines.events.on_gui_elem_changed, function(event)
+    local element = event.element
+    if not element.parent or element ~= element.parent.fluidFilter then return end
+    if element.elem_value and element.elem_value ~= "" then
+      -- Don't let them set an empty filter.
+      Pipe.setFluidFilter(entity, element.elem_value)
+    end
+  end)
+
+  script.on_event(defines.events.on_gui_closed, function(event)
+    player.gui.relative.unipipeFrame.visible = false
+    script.on_event(defines.events.on_tick, nil)
+    script.on_event(defines.events.on_gui_elem_changed, nil)
+  end)
+end
+
+function Pipe.buildGui(player)
+  player.gui.relative.add {
+    type = "frame",
+    name = "unipipeFrame",
+    direction = "vertical",
+    caption = { "zy-unipipe.heading" },
+    anchor = {
+      gui = defines.relative_gui_type.pipe_gui,
+      position = defines.relative_gui_position.bottom
+    },
+    style = "inner_frame_in_outer_frame",
+    visible = false
+  }
+  player.gui.relative.unipipeFrame.add {
+    type = "label",
+    name = "contentsHeading",
+    caption = { "zy-unipipe.contentsHeading" },
+    style = "heading_3_label",
+  }
+  local contentsRow = player.gui.relative.unipipeFrame.add {
+    type = "flow",
+    name = "contentsRow",
+    direction = "horizontal",
+    style = "horizontal_flow_with_extra_right_margin",
+  }
+  contentsRow.add {
+    type = "choose-elem-button",
+    elem_type = "fluid",
+    name = "fluidFilter",
+    mouse_button_filter = {"left"},
+    tooltip = "Fluid type",
+    style = "slot_button",
+  }
+  contentsRow.add {
+    type = "label",
+    name = "amountLabel",
+    caption = "0",
+  }
+  contentsRow.add {
+    type = "progressbar",
+    name = "amountBar",
+    value = 0,
+  }
+end
+
+function Pipe.destroyGui(player)
+  if player.gui.relative.unipipeFrame then player.gui.relative.unipipeFrame.destroy() end
+end

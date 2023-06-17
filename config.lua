@@ -15,6 +15,11 @@ function Config.getFluidItem(fluidName)
   return Config.HIDDEN_FLUID_PREFIX .. "-" .. fluidName
 end
 
+function Config.getFluidFromFluidItem(fluidItemName)
+  local n = string.len(Config.HIDDEN_FLUID_PREFIX .. "-")
+  return string.sub(fluidItemName, n+1, -1)
+end
+
 function Config.getFluidFillRecipe(fluidName)
   return Config.HIDDEN_FLUID_PREFIX .. "-fill-" .. fluidName
 end

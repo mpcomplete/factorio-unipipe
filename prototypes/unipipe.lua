@@ -107,7 +107,7 @@ local function createItemEntityRecipe(protoName, isInput)
 
   local pumpBase = table.deepcopy(data.raw["pump"]["pump"])
   local endcaps = makeEndcaps(isInput)
-  local entity = table.merge(table.deepcopy(data.raw["simple-entity-with-force"]["simple-entity-with-force"]), {
+  local entity = table.merge(table.deepcopy(data.raw["pipe-to-ground"]["pipe-to-ground"]), {
     name = protoName,
     icon = pumpBase.icon,
     icon_size = pumpBase.icon_size,
@@ -115,12 +115,13 @@ local function createItemEntityRecipe(protoName, isInput)
     minable = { mining_time = 0.2, result = protoName },
     gui_mode = "all",
     corpse = "",
-    fluid_box = {},
+    fluid_box = { pipe_connections = {} },
     selecttable_in_game = true,
     collision_box = {{-0.29, -0.9}, {0.29, 0.9}},
+    -- selection_box = {{-0.2, -.2}, {0.2, .2}},
     selection_box = {{-0.5, -1}, {0.5, 1}},
-    picture = {
-      north = { layers = {
+    pictures = {
+      up = { layers = {
         {
           filename = "__Unichest__/graphics/hr-unipipe-north.png",
           width = 88,
@@ -137,7 +138,7 @@ local function createItemEntityRecipe(protoName, isInput)
         },
         endcaps.north
       }},
-      south = { layers = {
+      down = { layers = {
         {
           filename = "__Unichest__/graphics/hr-unipipe-south.png",
           width = 88,
@@ -154,7 +155,7 @@ local function createItemEntityRecipe(protoName, isInput)
         },
         endcaps.south
       }},
-      east = { layers = {
+      right = { layers = {
         {
           filename = "__Unichest__/graphics/hr-unipipe-east.png",
           width = 144,
@@ -169,7 +170,7 @@ local function createItemEntityRecipe(protoName, isInput)
         },
         endcaps.east
       }},
-      west = { layers = {
+      left = { layers = {
         {
           filename = "__Unichest__/graphics/hr-unipipe-west.png",
           width = 144,
@@ -194,7 +195,7 @@ local function createItemEntityRecipe(protoName, isInput)
       flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       collision_mask = {},
-      selection_box = {{0,0}, {0,0}},
+      -- selection_box = {{0,0}, {0,0}},
       order = "z",
       max_health = 2147483648,
       energy_source = { type = "void" },

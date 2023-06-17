@@ -23,13 +23,8 @@ function Chest.onBuiltEntity(event, entity)
   end
 end
 
-script.on_event(defines.events.on_gui_opened, function(event)
-  local player = game.get_player(event.player_index)
-  if player == nil then return end
-  if event.entity == nil then return end
-  if event.entity.name ~= Config.CHEST_NAME then return end
-
-  local guiEntity = event.entity
+function Chest.openGui(player, entity)
+  local guiEntity = entity
   local guiLinkId = guiEntity.link_id
   local guiFilter = Util.getNameFromId(guiLinkId)
   player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
@@ -50,12 +45,12 @@ script.on_event(defines.events.on_gui_opened, function(event)
       guiFilter = element.elem_value
     end
   end)
-end)
 
-script.on_event(defines.events.on_gui_closed, function(event)
-  script.on_event(defines.events.on_tick, nil)
-  script.on_event(defines.events.on_gui_elem_changed, nil)
-end)
+  script.on_event(defines.events.on_gui_closed, function(event)
+    script.on_event(defines.events.on_tick, nil)
+    script.on_event(defines.events.on_gui_elem_changed, nil)
+  end)
+end
 
 function Chest.buildGui(player)
   player.gui.relative.add {

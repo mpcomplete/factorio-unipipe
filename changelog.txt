@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.2
+Date: 2023-06-19
+  Fixes:
+    - Fixed a crash when destroyed an entity before placing a unipipe
+    - Try to fix a mysterious crash when destroying a unipipe
+---------------------------------------------------------------------------------------------------
 Version: 1.0.1
 Date: 2023-06-18
   Fixes:

@@ -115,6 +115,11 @@ function updateUnipipesForSystem(fluidbox, systemId)
   end
 end
 
+-- Stupid test to make sure the fluidbox *actually* has a given index, despite #fluidbox telling us it's valid.
+function testFluidbox(fluidbox, i)
+  return pcall(function() return fluidbox.get_filter(i) end) and pcall(function() return fluidbox[i] end)
+end
+
 function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
   if not fluidbox.valid then return end
   if table.any(visited, function(v) return v == fluidbox end) then return end
@@ -128,7 +133,7 @@ function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
   end
 
   for i = 1, #fluidbox do
-    if fluidbox.get_fluid_system_id(i) == systemId then
+    if fluidbox.get_fluid_system_id(i) == systemId and testFluidbox(fluidbox, i) then
       if not fluidType and not isUnipipe and fluidbox.get_filter(i) then fluidType = fluidbox.get_filter(i).name end
       if not fluidType and not isUnipipe and fluidbox[i] then fluidType = fluidbox[i].name end
       for _, connection in pairs(fluidbox.get_connections(i) or {}) do

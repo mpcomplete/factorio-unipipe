@@ -20,12 +20,12 @@ script.on_event(defines.events.on_player_selected_area, function(event)
   end)
 end)
 
-function getDefaultFluidName()
-  if game.fluid_prototypes["water"] then return "water" end
-  for k,v in pairs(game.fluid_prototypes) do
-    if v.valid and not v.hidden then return v.name end
-  end
-  return "steam" -- no fluids?
+function getHiddenEntities(unit_number)
+  return global.hiddenEntities and global.hiddenEntities[unit_number] or nil
+end
+
+function getPipeFromAssembler(assembler)
+  return global.hiddenAssemblerToPipe and assembler and global.hiddenAssemblerToPipe[assembler.unit_number] or nil
 end
 
 function Pipe.onBuiltEntity(event, entity)
@@ -81,7 +81,7 @@ end
 function Pipe.onMovedEntity(event)
   local entity = event.moved_entity
   if not Config.isPipeName(entity.name) then return end
-  local hidden = global.hiddenEntities[entity.unit_number]
+  local hidden = getHiddenEntities(entity.unit_number)
   if not hidden then return end
   local pos = Position.new(entity.position)
   hidden.assembler.teleport(pos)
@@ -90,13 +90,13 @@ function Pipe.onMovedEntity(event)
 end
 
 function Pipe.updateFluidFilter(entity)
-  local hidden = global.hiddenEntities[entity.unit_number]
+  local hidden = getHiddenEntities(entity.unit_number)
   if not hidden then return end
   updateUnipipesForSystem(hidden.assembler.fluidbox, hidden.assembler.fluidbox.get_fluid_system_id(1))
 end
 
 function Pipe.setFluidFilter(entity, fluidName)
-  local hidden = global.hiddenEntities[entity.unit_number]
+  local hidden = getHiddenEntities(entity.unit_number)
   if not hidden then return end
   local isInput = entity.name == Config.PIPE_FILL_NAME
   local itemName = Config.getFluidItem(fluidName)
@@ -128,7 +128,7 @@ function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
   local isUnipipe = fluidbox.owner and fluidbox.owner.name == Config.HIDDEN_ASSEMBLER_NAME
 
   if isUnipipe then
-    local unipipe = global.hiddenAssemblerToPipe[fluidbox.owner.unit_number]
+    local unipipe = getPipeFromAssembler(fluidbox.owner)
     if unipipe and unipipe.valid then table.insert(unipipes, unipipe) end
   end
 
@@ -145,21 +145,29 @@ function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
   return fluidType
 end
 
-script.on_event(defines.events.on_entity_destroyed, function(event)
-  local hidden = global.hiddenEntities[event.unit_number]
+function onEntityDestroyed(event)
+  local hidden = getHiddenEntities(event.unit_number)
   if hidden then
-    global.hiddenAssemblerToPipe[hidden.assembler.unit_number] = nil
+    if global.hiddenAssemblerToPipe and hidden.assembler.unit_number then
+      global.hiddenAssemblerToPipe[hidden.assembler.unit_number] = nil
+    else
+      game.print("Missing data with unipipe. Please report this message on the Unipipe mod page. Assembler info: " .. (hidden.assembler or "nil") .. ", " .. (hidden.assembler and hidden.assembler.unit_number or "nil"))
+    end
     for k,v in pairs(hidden) do
       v.destroy()
     end
+    global.hiddenEntities[event.unit_number] = nil
   end
-  global.hiddenEntities[event.unit_number] = nil
+end
+
+script.on_event(defines.events.on_entity_destroyed, function(event)
+  pcall(onEntityDestroyed, event)
 end)
 
 script.on_event(defines.events.on_player_rotated_entity, function(event)
   local entity = event.entity
   if not Config.isPipeName(entity.name) then return end
-  local hidden = global.hiddenEntities[entity.unit_number]
+  local hidden = getHiddenEntities(entity.unit_number)
   if hidden then
     hidden.assembler.direction = Direction.opposite(entity.direction)
   end
@@ -168,7 +176,7 @@ end)
 function Pipe.openGui(player, entity)
   player.gui.relative.unipipeFrame.visible = true
   script.on_event(defines.events.on_tick, function(event)
-    local hidden = global.hiddenEntities[entity.unit_number]
+    local hidden = getHiddenEntities(entity.unit_number)
     if hidden then
       local inventory = hidden.chest.get_output_inventory()
       local itemType = inventory.get_filter(1)

@@ -220,6 +220,7 @@ local function createItemEntityRecipe(protoName, isInput)
     platform_picture = util.empty_sprite(1),
   })
   inserter.minable = nil
+  inserter.next_upgrade = nil
 
   local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
   local assembler = table.dictionary_combine(table.deepcopy(baseAssembler), baseHidden, {
@@ -236,6 +237,7 @@ local function createItemEntityRecipe(protoName, isInput)
   assembler.animation = nil
   assembler.module_specification = nil
   assembler.allowed_effects = nil
+  assembler.next_upgrade = nil
 
   local storageSize = settings.startup["zy-unipipe-storage-size"].value
   local baseChest = data.raw["linked-container"]["linked-chest"]
@@ -247,6 +249,7 @@ local function createItemEntityRecipe(protoName, isInput)
     gui_mode = "all",
   })
   chest.minable = nil
+  chest.next_upgrade = nil
 
   --- Recipe ---
   local crafting_cost = settings.startup["zy-unipipe-crafting-cost"].value

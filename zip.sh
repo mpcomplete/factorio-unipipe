@@ -1,5 +1,5 @@
 #!/bin/sh
-name=Unipipe_1.0.2
+name=Unipipe_1.0.3
 mkdir $name
 cp -a * $name
 rm $name/*.sh $name/*.zip $name/$name $name/action.gif -rf

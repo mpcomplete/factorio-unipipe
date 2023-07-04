@@ -70,9 +70,7 @@ function Pipe.onBuiltPipe(event, entity)
 end
 
 function Pipe.onBuiltFluidbox(event, entity)
-  game.print("onbuilt: " .. settings.global["zy-unipipe-autofilter-mode"].value)
   if settings.global["zy-unipipe-autofilter-mode"].value ~= "any" then return end
-  game.print("onbuilt: proceeding")
   local lastSystemId = nil
   for i = 1, #entity.fluidbox do
     local systemId = entity.fluidbox.get_fluid_system_id(i)

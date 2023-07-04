@@ -1,5 +1,5 @@
 #!/bin/sh
-name=Unipipe_1.0.5
+name=Unipipe_1.0.6
 ./zip.sh
 mv ${name}.zip 'C:\Users\mpcom\AppData\Roaming\Factorio\mods'
 echo cmd /c '"C:\Program Files\Factorio\bin\x64\factorio.exe"'

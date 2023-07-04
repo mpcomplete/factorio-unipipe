@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.5
+Date: 2023-07-03
+  Info:
+    - Update changelog
+---------------------------------------------------------------------------------------------------
+Version: 1.0.4
+Date: 2023-07-03
+  Fixes:
+    - Massive performance improvement when placing fluidbox entities (pipes, unipipes, chem plant)
+    - Optional setting to disable unipipe auto-filter in case above performance is not good enough
+    - Fixed a crash with destroyed unipipes
+---------------------------------------------------------------------------------------------------
 Version: 1.0.3
 Date: 2023-06-20
   Fixes:
@@ -19,4 +31,3 @@ Version: 1.0.0
 Date: 2023-06
   Info:
     - First release
----------------------------------------------------------------------------------------------------

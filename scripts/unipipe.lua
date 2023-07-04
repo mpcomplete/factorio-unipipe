@@ -126,9 +126,10 @@ function testFluidbox(fluidbox, i)
 end
 
 function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
-  if not fluidbox.valid then return end
-  if table.any(visited, function(v) return v == fluidbox end) then return end
-  table.insert(visited, fluidbox)
+  if not fluidbox.valid or not fluidbox.owner then return end
+  if table.any(visited[fluidbox.owner.unit_number] or {}, function(v) return v == fluidbox end) then return end
+  visited[fluidbox.owner.unit_number] = visited[fluidbox.owner.unit_number] or {}
+  table.insert(visited[fluidbox.owner.unit_number], fluidbox)
   local fluidType = nil
   local isUnipipe = fluidbox.owner and fluidbox.owner.name == Config.HIDDEN_ASSEMBLER_NAME
 

@@ -64,10 +64,15 @@ function Pipe.onBuiltPipe(event, entity)
   global.hiddenAssemblerToPipe[assembler.unit_number] = entity
   script.register_on_entity_destroyed(entity)
   Pipe.setFluidFilter(entity, Config.NULL_FLUID_NAME)  -- Need to set the assembler's fluid recipe so it has a fluidbox
-  updateUnipipesForSystem(assembler.fluidbox, assembler.fluidbox.get_fluid_system_id(1))
+  if settings.global["zy-unipipe-autofilter-mode"].value ~= "disabled" then
+    updateUnipipesForSystem(assembler.fluidbox, assembler.fluidbox.get_fluid_system_id(1))
+  end
 end
 
 function Pipe.onBuiltFluidbox(event, entity)
+  game.print("onbuilt: " .. settings.global["zy-unipipe-autofilter-mode"].value)
+  if settings.global["zy-unipipe-autofilter-mode"].value ~= "any" then return end
+  game.print("onbuilt: proceeding")
   local lastSystemId = nil
   for i = 1, #entity.fluidbox do
     local systemId = entity.fluidbox.get_fluid_system_id(i)
@@ -176,6 +181,7 @@ end)
 function Pipe.openGui(player, entity)
   player.gui.relative.unipipeFrame.visible = true
   script.on_event(defines.events.on_tick, function(event)
+    if not entity.valid then return end
     local hidden = getHiddenEntities(entity.unit_number)
     if hidden then
       local inventory = hidden.chest.get_output_inventory()
@@ -193,6 +199,7 @@ function Pipe.openGui(player, entity)
   end)
 
   script.on_event(defines.events.on_gui_elem_changed, function(event)
+    if not entity.valid then return end
     local element = event.element
     if not element.parent or element ~= element.parent.fluidFilter then return end
     if element.elem_value and element.elem_value ~= "" then

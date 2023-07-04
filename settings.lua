@@ -22,5 +22,12 @@ data:extend({
     setting_type = "startup",
     default_value = "easy",
     allowed_values = { "easy", "medium", "hard" }
-  }
+  },
+  {
+    type = "string-setting",
+    name = "zy-unipipe-autofilter-mode",
+    setting_type = "runtime-global",
+    default_value = "any",
+    allowed_values = { "any", "unipipe", "disabled" }
+  },
 })

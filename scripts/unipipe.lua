@@ -1,6 +1,6 @@
-local Position = require('__stdlib__/stdlib/area/position')
-local table = require('__stdlib__/stdlib/utils/table')
-local Direction = require('__stdlib__/stdlib/area/direction')
+local Position = require('__kry_stdlib__/stdlib/area/position')
+local table = require('__kry_stdlib__/stdlib/utils/table')
+local Direction = require('__kry_stdlib__/stdlib/area/direction')
 local Chest = require('chestutil')
 local util = require("__core__/lualib/util")
 
@@ -21,11 +21,11 @@ script.on_event(defines.events.on_player_selected_area, function(event)
 end)
 
 function getHiddenEntities(unit_number)
-  return global.hiddenEntities and global.hiddenEntities[unit_number] or nil
+  return storage.hiddenEntities and storage.hiddenEntities[unit_number] or nil
 end
 
 function getPipeFromAssembler(assembler)
-  return global.hiddenAssemblerToPipe and assembler and global.hiddenAssemblerToPipe[assembler.unit_number] or nil
+  return storage.hiddenAssemblerToPipe and assembler and storage.hiddenAssemblerToPipe[assembler.unit_number] or nil
 end
 
 function Pipe.onBuiltEntity(event, entity)
@@ -58,11 +58,11 @@ function Pipe.onBuiltPipe(event, entity)
   inserter.inserter_stack_size_override = 20
   inserter.pickup_target = isInput and assembler or chest
   inserter.drop_target = isInput and chest or assembler
-  global.hiddenEntities = global.hiddenEntities or {}
-  global.hiddenEntities[entity.unit_number] = { assembler = assembler, inserter = inserter, chest = chest }
-  global.hiddenAssemblerToPipe = global.hiddenAssemblerToPipe or {}
-  global.hiddenAssemblerToPipe[assembler.unit_number] = entity
-  script.register_on_entity_destroyed(entity)
+  storage.hiddenEntities = storage.hiddenEntities or {}
+  storage.hiddenEntities[entity.unit_number] = { assembler = assembler, inserter = inserter, chest = chest }
+  storage.hiddenAssemblerToPipe = storage.hiddenAssemblerToPipe or {}
+  storage.hiddenAssemblerToPipe[assembler.unit_number] = entity
+  script.register_on_object_destroyed(entity)
   Pipe.setFluidFilter(entity, Config.NULL_FLUID_NAME)  -- Need to set the assembler's fluid recipe so it has a fluidbox
   if settings.global["zy-unipipe-autofilter-mode"].value ~= "disabled" then
     updateUnipipesForSystem(assembler.fluidbox, assembler.fluidbox.get_fluid_system_id(1))
@@ -106,7 +106,7 @@ function Pipe.setFluidFilter(entity, fluidName)
   hidden.assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidExtractRecipe(fluidName))
   hidden.assembler.direction = Direction.opposite(entity.direction)  -- need to set after setting recipe
   hidden.inserter.set_filter(1, itemName)
-  Chest.setItemFilter(hidden.chest, itemName)
+  Chest.setItemFilter(hidden.chest, {name = itemName, quality = "normal"})
 end
 
 function updateUnipipesForSystem(fluidbox, systemId)
@@ -150,21 +150,22 @@ function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
 end
 
 function onEntityDestroyed(event)
-  local hidden = getHiddenEntities(event.unit_number)
+  local hidden = getHiddenEntities(event.useful_id)
+  game.print("Object destroyed with hidden=" .. (hidden and "nonnil" or "nil"))
   if hidden then
-    if global.hiddenAssemblerToPipe and hidden.assembler.unit_number then
-      global.hiddenAssemblerToPipe[hidden.assembler.unit_number] = nil
+    if storage.hiddenAssemblerToPipe and hidden.assembler.unit_number then
+      storage.hiddenAssemblerToPipe[hidden.assembler.unit_number] = nil
     else
       game.print("Missing data with unipipe. Please report this message on the Unipipe mod page. Assembler info: " .. (hidden.assembler or "nil") .. ", " .. (hidden.assembler and hidden.assembler.unit_number or "nil"))
     end
     for k,v in pairs(hidden) do
       v.destroy()
     end
-    global.hiddenEntities[event.unit_number] = nil
+    storage.hiddenEntities[event.useful_id] = nil
   end
 end
 
-script.on_event(defines.events.on_entity_destroyed, function(event)
+script.on_event(defines.events.on_object_destroyed, function(event)
   pcall(onEntityDestroyed, event)
 end)
 
@@ -224,7 +225,7 @@ function Pipe.buildGui(player)
       gui = defines.relative_gui_type.entity_with_energy_source_gui,
       position = defines.relative_gui_position.bottom
     },
-    style = "statistics_frame",
+    style = "frame",
     visible = false
   }
   local contentsRow = player.gui.relative.unipipeFrame.add {

@@ -1,7 +1,8 @@
 local Util = require('util')
+local table = require('__kry_stdlib__/stdlib/utils/table')
 
 function onBuiltEntity(event)
-  local entity = event.created_entity
+  local entity = event.entity
   if entity and entity.valid then
     Pipe.onBuiltEntity(event, entity)
   end
@@ -24,7 +25,7 @@ script.on_event(defines.events.on_gui_opened, function(event)
 end)
 
 script.on_init(function(event)
-  global.nameToId = {}
+  storage.filterToId = {}
   for i, player in pairs(game.players) do
     initGui(player)
   end
@@ -42,6 +43,13 @@ end)
 script.on_configuration_changed(function(event)
   for i, player in pairs(game.players) do
     initGui(player)
+  end
+
+  game.print("Unipipe: mod configuration changed, trying to repair chest filters on every surface")
+  for _, surface in pairs(game.surfaces) do
+    table.each(surface.find_entities_filtered {name = Config.CHEST_NAME}, function(v)
+      Pipe.updateFluidFilter(v)
+    end)
   end
 end)
 

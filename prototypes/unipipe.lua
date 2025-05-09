@@ -1,7 +1,7 @@
 -- TODO
 -- item/research/tech icons
 
-local table = require('__stdlib__/stdlib/utils/table')
+local table = require('__kry_stdlib__/stdlib/utils/table')
 
 local function makeEndcaps(isInput)
   local pictures = {
@@ -116,7 +116,7 @@ local function createItemEntityRecipe(protoName, isInput)
     minable = { mining_time = 0.2, result = protoName },
     gui_mode = "all",
     corpse = "",
-    fluid_box = { pipe_connections = {} },
+    fluid_box = { volume = 10000, pipe_connections = {} },
     energy_source = { type = "void" },
     selecttable_in_game = true,
     collision_box = {{-0.29, -0.9}, {0.29, 0.9}},
@@ -192,11 +192,13 @@ local function createItemEntityRecipe(protoName, isInput)
 
   --- Hidden entities ---
 
-  local baseInserter = data.raw["inserter"]["stack-filter-inserter"]
+  local baseInserter = data.raw["inserter"]["bulk-inserter"]
   local baseHidden = {
-      flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+      flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
       -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
-      collision_mask = {},
+      hidden = true,
+      hidden_in_factoriopedia = true,
+      collision_mask = { layers = {} },
       selection_box = {{0,0}, {0,0}},
       order = "z",
       max_health = 2147483648,
@@ -224,12 +226,13 @@ local function createItemEntityRecipe(protoName, isInput)
 
   local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
   local assembler = table.dictionary_combine(table.deepcopy(baseAssembler), baseHidden, {
-    flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
     name = Config.HIDDEN_ASSEMBLER_NAME,
-    collision_box = {{-0.6, -0.6}, {0.6, 0.6}},
+    flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+    collision_box = {{-0.6, -1.5}, {0.6, 1.5}},
     drawing_box = {{0,0}, {0,0}},
     crafting_speed = 100,
     bottleneck_ignore = true,
+    module_slots = 0,
   })
   assembler.fluid_boxes[1].pipe_connections[1].position = {0, -1.5}
   assembler.fluid_boxes[2].pipe_connections[1].position = {0, 1.5}
@@ -255,28 +258,29 @@ local function createItemEntityRecipe(protoName, isInput)
   local crafting_cost = settings.startup["zy-unipipe-crafting-cost"].value
   local ingredients = {
       --crafting_cost == "easy" and {
-        { "iron-gear-wheel", 1 },
-        { "electronic-circuit", 1 },
-        { "pipe-to-ground", 1 },
+        { type = "item", name = "iron-gear-wheel", amount = 1 },
+        { type = "item", name = "electronic-circuit", amount = 1 },
+        { type = "item", name = "pipe-to-ground", amount = 1 },
   }
   ingredients =
       crafting_cost == "medium" and {
-        { "pump",               2 },
-        { "pipe-to-ground",     1 },
-        { "storage-tank",       5 },
-        { "advanced-circuit",   5 },
+        { type = "item", name = "pump",               amount = 2 },
+        { type = "item", name = "pipe-to-ground",     amount = 1 },
+        { type = "item", name = "storage-tank",       amount = 5 },
+        { type = "item", name = "advanced-circuit",   amount = 5 },
       } or crafting_cost == "hard" and {
-        { "pump",               2 },
-        { "pipe-to-ground",     1 },
-        { "storage-tank",       50 },
-        { "processing-unit",    10 }
+        { type = "item", name = "pump",               amount = 2 },
+        { type = "item", name = "pipe-to-ground",     amount = 1 },
+        { type = "item", name = "storage-tank",       amount = 50 },
+        { type = "item", name = "processing-unit",    amount = 10 }
       } or ingredients
   local recipe = {
     type = "recipe",
     name = protoName,
     enabled = false,
     ingredients = ingredients,
-    result = protoName
+    results = { { type = "item", name = protoName, amount = 1 } },
+    auto_recycle = false,
   }
 
   return {item, entity, recipe, inserter, assembler, chest}

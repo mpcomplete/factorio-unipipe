@@ -1,8 +1,8 @@
 #!/bin/sh
-name=Unipipe_1.0.6
+name=Unipipe_1.0.7
 mkdir $name
 cp -a * $name
 rm $name/*.sh $name/*.zip $name/$name $name/action.gif -rf
 rm -rf ${name}.zip
-tar -acf ${name}.zip $name
+7z a ${name}.zip $name
 rm -rf $name

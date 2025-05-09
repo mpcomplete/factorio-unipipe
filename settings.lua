@@ -24,10 +24,16 @@ data:extend({
     allowed_values = { "easy", "medium", "hard" }
   },
   {
+    type = "bool-setting",
+    name = "zy-unipipe-per-surface",
+    setting_type = "startup",
+    default_value = true
+  },
+  {
     type = "string-setting",
     name = "zy-unipipe-autofilter-mode",
     setting_type = "runtime-global",
     default_value = "any",
     allowed_values = { "any", "unipipe", "disabled" }
-  },
+  }
 })

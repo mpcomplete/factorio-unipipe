@@ -5,6 +5,7 @@ Date: 2025-05-08
     - Updated for Factorio 2.0.
   Changes:
     - Added a per-surface option, enabled by default.
+    - Implemented with the new "linked connections" for FluidBoxes. Much simplified.
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.6
 Date: 2023-07-03

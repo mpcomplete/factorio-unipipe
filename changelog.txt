@@ -6,6 +6,8 @@ Date: 2025-05-08
   Changes:
     - Added a per-surface option, enabled by default.
     - Implemented with the new "linked connections" for FluidBoxes. Much simplified.
+    - Optimized pipe scanning for fluid type. Placing pipes and unipipes in a large pipe network
+    should be much faster again (better than 1.0.4).
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.6
 Date: 2023-07-03

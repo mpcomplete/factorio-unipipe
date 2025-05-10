@@ -152,47 +152,78 @@ function Pipe.setFluidFilter(entity, fluidName)
   end
 end
 
+local fluidIteratorData = { visited = {}, toVisit = {}, unipipes = {}, fluidTypes = {} }
 function updateUnipipesForSystem(fluidbox)
-  local unipipes = {}
-  local fluidType = findConnectedUnipipes(fluidbox, nil, unipipes, {})
-  if not fluidType then return end
-  for _, pipe in pairs(unipipes) do
-    Pipe.setFluidFilter(pipe, fluidType)
-  end
-end
-
--- Stupid test to make sure the fluidbox *actually* has a given index, despite #fluidbox telling us it's valid.
-function testFluidbox(fluidbox, i)
-  return pcall(function() return fluidbox.get_filter(i) end) and pcall(function() return fluidbox[i] end)
-end
-
--- fluidboxIdx may be nil to search all fluidbox indices, or non-nil to only consider one.
-function findConnectedUnipipes(fluidbox, fluidboxIdx, unipipes, visited)
-  if not fluidbox.valid or not fluidbox.owner then return end
-  if table.any(visited[fluidbox.owner.unit_number] or {}, function(v) return v == fluidbox end) then return end
-  visited[fluidbox.owner.unit_number] = visited[fluidbox.owner.unit_number] or {}
-  table.insert(visited[fluidbox.owner.unit_number], fluidbox)
-  local fluidType = nil
-  local isUnipipe = fluidbox.owner and Config.isPipeName(fluidbox.owner.name)
-
-  if isUnipipe then
-    table.insert(unipipes, fluidbox.owner)
-  end
-
   for i = 1, #fluidbox do
-    if not fluidboxIdx or i == fluidboxIdx then
-      -- if not fluidType and not isUnipipe and fluidbox.get_locked_fluid(i) then fluidType = fluidbox.get_locked_fluid(i) end
-      if not fluidType and not isUnipipe and fluidbox.get_filter(i) then fluidType = fluidbox.get_filter(i).name end
-      if not fluidType and not isUnipipe and fluidbox[i] then fluidType = fluidbox[i].name end
-      for _, connection in pairs(fluidbox.get_pipe_connections(i) or {}) do
-        if connection.target then
-          local rv = findConnectedUnipipes(connection.target, connection.target_fluidbox_index, unipipes, visited)
-          fluidType = fluidType or rv
+    table.insert(fluidIteratorData.toVisit, {fluidbox = fluidbox, fluidboxIdx = i, networkId = fluidbox.owner.unit_number .. "/" .. i})
+  end
+  script.on_nth_tick(1, function(v)
+    findConnectedUnipipes(fluidIteratorData.toVisit, fluidIteratorData.unipipes, fluidIteratorData.visited, fluidIteratorData.fluidTypes)
+    if #fluidIteratorData.toVisit == 0 then
+      script.on_nth_tick(1, nil)
+
+      for _, pipeData in pairs(fluidIteratorData.unipipes) do
+        local fluidType = fluidIteratorData.fluidTypes[pipeData.networkId]
+        if fluidType then
+          Pipe.setFluidFilter(pipeData.pipe, fluidType)
         end
       end
+      fluidIteratorData = { visited = {}, toVisit = {}, unipipes = {}, fluidTypes = {} }
     end
+  end)
+end
+
+function findConnectedUnipipes(toVisit, unipipes, visited, fluidTypes)
+  local maxVisitsPerTick = 10
+  local visitCounter = 0
+  while #toVisit > 0 and visitCounter < maxVisitsPerTick do
+    local visit = table.remove(toVisit)
+    local fluidbox = visit.fluidbox
+    local fluidboxIdx = visit.fluidboxIdx
+    if not fluidbox.valid or not fluidbox.owner then goto continue end
+
+    local key = fluidbox.owner.unit_number .. '/' .. fluidboxIdx
+    if visited[key] then
+      if visited[key] ~= visit.networkId then
+        -- We reached a fluidbox visited as part of a different network. Merge ours with it.
+        local otherNetworkId = visited[key]
+        for k,v in pairs(visited) do
+          if v == visit.networkId then visited[k] = otherNetworkId end
+        end
+        for k,v in pairs(toVisit) do
+          if v.networkId == visit.networkId then toVisit[k].networkId = otherNetworkId end
+        end
+        for k,v in pairs(unipipes) do
+          if v.networkId == visit.networkId then unipipes[k].networkId = otherNetworkId end
+        end
+        for k,v in pairs(fluidTypes) do
+          if k == visit.networkId then fluidTypes[otherNetworkId] = v end
+        end
+      end
+      goto continue
+    end
+    visited[key] = visit.networkId
+    visitCounter = visitCounter + 1
+
+    local isUnipipe = fluidbox.owner and Config.isPipeName(fluidbox.owner.name)
+    if isUnipipe then
+      table.insert(unipipes, { pipe = fluidbox.owner, networkId = visit.networkId })
+    end
+
+    -- if not fluidType and not isUnipipe and fluidbox.get_locked_fluid(i) then fluidType = fluidbox.get_locked_fluid(i) end
+    if not fluidTypes[visit.networkId] and not isUnipipe and fluidbox.get_filter(fluidboxIdx) then
+      fluidTypes[visit.networkId] = fluidbox.get_filter(fluidboxIdx).name
+    end
+    if not fluidTypes[visit.networkId] and not isUnipipe and fluidbox[fluidboxIdx] then
+      fluidTypes[visit.networkId] = fluidbox[fluidboxIdx].name
+    end
+    for _, connection in pairs(fluidbox.get_pipe_connections(fluidboxIdx) or {}) do
+      if connection.target and connection.connection_type ~= "linked" then
+        table.insert(toVisit, {fluidbox = connection.target, fluidboxIdx = connection.target_fluidbox_index, networkId = visit.networkId})
+      end
+    end
+    ::continue::
   end
-  return fluidType
 end
 
 function onEntityDestroyed(event)

@@ -1,10 +1,107 @@
+local Area = require('__kry_stdlib__/stdlib/area/area')
 local Position = require('__kry_stdlib__/stdlib/area/position')
-local table = require('__kry_stdlib__/stdlib/utils/table')
 local Direction = require('__kry_stdlib__/stdlib/area/direction')
-local Chest = require('chestutil')
+local table = require('__kry_stdlib__/stdlib/utils/table')
 local util = require("__core__/lualib/util")
 
 Pipe = {}
+
+function getHiddenSurface()
+  local surface = game.get_surface(Config.HIDDEN_SURFACE_NAME)
+  if not surface then
+    surface = game.create_surface(Config.HIDDEN_SURFACE_NAME)
+    for _, force in pairs(game.forces) do
+      force.set_surface_hidden(Config.HIDDEN_SURFACE_NAME, true)
+    end
+  end
+  return surface
+end
+
+function fluidIdFromLinkedPipe(linkedPipe)
+  for fluidId, data in pairs(storage.hiddenPipeData) do
+    if linkedPipe.position.y == data.yPosition then
+      return fluidId
+    end
+  end
+end
+
+function destroyLinkedPipe(linkedPipe)
+  local fluidId = fluidIdFromLinkedPipe(linkedPipe)
+  if fluidId then
+    -- Recycle this now-available x position.
+    table.insert(storage.hiddenPipeData[fluidId].recycledXPositions, linkedPipe.position.x)
+  end
+  linkedPipe.destroy()
+end
+
+function removeLinkConnection(entity)
+  if entity.fluidbox == nil then return end
+  for i, v in ipairs(entity.fluidbox.get_linked_connections()) do
+    if v.other_entity.prototype.name == Config.HIDDEN_LINKED_PIPE_NAME then
+      entity.fluidbox.remove_linked_connection(i)
+      entity.clear_fluid_inside()
+      destroyLinkedPipe(v.other_entity)
+    end
+  end
+end
+
+function getLinkConnection(entity)
+  if entity.fluidbox == nil then return end
+  for _, v in ipairs(entity.fluidbox.get_linked_connections()) do
+    if v.other_entity.prototype.name == Config.HIDDEN_LINKED_PIPE_NAME then
+      return {fluidId = fluidIdFromLinkedPipe(v.other_entity)}
+    end
+  end
+end
+
+function getFluidId(entity, fluidName)
+  local surfaceName = "nauvis"
+  if settings.startup["zy-unipipe-per-surface"].value then surfaceName = entity.surface.name end
+  return surfaceName .. "/" .. entity.force.name .. "/" .. fluidName
+end
+
+function setupLinkConnection(entity, fluidName)
+  local oldLinkConnection = getLinkConnection(entity)
+  local fluidId = getFluidId(entity, fluidName)
+  if oldLinkConnection and oldLinkConnection.fluidId == fluidId then return end
+  removeLinkConnection(entity)
+  storage.hiddenPipeData = storage.hiddenPipeData or {}
+  if storage.hiddenPipeData[fluidId] == nil then
+    storage.hiddenPipeData[fluidId] = {
+      xPosition = 0.5,
+      yPosition = table.size(storage.hiddenPipeData) * 3 + 0.5,
+      recycledXPositions = {},
+    }
+  end
+  local data = storage.hiddenPipeData[fluidId]
+
+  -- Add (or reuse) a pipe to the row of pipes for this fluid.
+  local xPosition = data.xPosition
+  if #data.recycledXPositions > 0 then
+    xPosition = table.remove(data.recycledXPositions)
+  else
+    getHiddenSurface().create_entity{
+      name = Config.HIDDEN_PIPE_NAME,
+      position = {xPosition, data.yPosition-1},
+      direction = defines.direction.north,
+      force = entity.force,
+      create_build_effect_smoke = false,
+    }
+    data.xPosition = data.xPosition + 1
+  end
+
+  -- Add a linked pipe connected to the above row, linked to our unipipe.
+  local linkedPipe = getHiddenSurface().create_entity{
+		name = Config.HIDDEN_LINKED_PIPE_NAME,
+		position = {xPosition, data.yPosition},
+		direction = defines.direction.north,
+		force = entity.force,
+		create_build_effect_smoke = false,
+	}
+	linkedPipe.fluidbox.add_linked_connection(1, entity, 1)
+
+	return linkedPipe
+end
 
 -- Support for Unichest selection tool.
 script.on_event(defines.events.on_player_selected_area, function(event)
@@ -20,14 +117,6 @@ script.on_event(defines.events.on_player_selected_area, function(event)
   end)
 end)
 
-function getHiddenEntities(unit_number)
-  return storage.hiddenEntities and storage.hiddenEntities[unit_number] or nil
-end
-
-function getPipeFromAssembler(assembler)
-  return storage.hiddenAssemblerToPipe and assembler and storage.hiddenAssemblerToPipe[assembler.unit_number] or nil
-end
-
 function Pipe.onBuiltEntity(event, entity)
   if entity.name == Config.PIPE_FILL_NAME or entity.name == Config.PIPE_EXTRACT_NAME then Pipe.onBuiltPipe(event, entity)
   elseif entity.fluidbox and entity.fluidbox.valid and #entity.fluidbox > 0 then Pipe.onBuiltFluidbox(event, entity)
@@ -35,83 +124,36 @@ function Pipe.onBuiltEntity(event, entity)
 end
 
 function Pipe.onBuiltPipe(event, entity)
-  local isInput = entity.name == Config.PIPE_FILL_NAME
-  local pos = Position.new(entity.position)
-  local dir = entity.direction
-  -- 3 entities from north to south: assembler -> inserter -> chest
-  local assembler = entity.surface.create_entity{
-    name = Config.HIDDEN_ASSEMBLER_NAME,
-    position = pos,
-    force = entity.force,
-  }
-  local inserter = entity.surface.create_entity{
-    name = Config.HIDDEN_INSERTER_NAME,
-    position = pos,
-    direction = isInput and Direction.opposite(dir) or dir, -- sets pickup driection. `dir` points to chest
-    force = entity.force,
-  }
-  local chest = entity.surface.create_entity{
-    name = Config.HIDDEN_CHEST_NAME,
-    position = pos:translate(dir, .5),
-    force = entity.force,
-  }
-  inserter.inserter_stack_size_override = 20
-  inserter.pickup_target = isInput and assembler or chest
-  inserter.drop_target = isInput and chest or assembler
-  storage.hiddenEntities = storage.hiddenEntities or {}
-  storage.hiddenEntities[entity.unit_number] = { assembler = assembler, inserter = inserter, chest = chest }
-  storage.hiddenAssemblerToPipe = storage.hiddenAssemblerToPipe or {}
-  storage.hiddenAssemblerToPipe[assembler.unit_number] = entity
   script.register_on_object_destroyed(entity)
-  Pipe.setFluidFilter(entity, Config.NULL_FLUID_NAME)  -- Need to set the assembler's fluid recipe so it has a fluidbox
+  -- Pipe.setFluidFilter(entity, Config.NULL_FLUID_NAME)
   if settings.global["zy-unipipe-autofilter-mode"].value ~= "disabled" then
-    updateUnipipesForSystem(assembler.fluidbox, assembler.fluidbox.get_fluid_system_id(1))
+    updateUnipipesForSystem(entity.fluidbox)
   end
 end
 
 function Pipe.onBuiltFluidbox(event, entity)
-  if settings.global["zy-unipipe-autofilter-mode"].value ~= "any" then return end
-  local lastSystemId = nil
-  for i = 1, #entity.fluidbox do
-    local systemId = entity.fluidbox.get_fluid_system_id(i)
-    if systemId ~= lastSystemId then
-      lastSystemId = systemId
-      updateUnipipesForSystem(entity.fluidbox, systemId)
-    end
+  if settings.global["zy-unipipe-autofilter-mode"].value == "any" then
+    updateUnipipesForSystem(entity.fluidbox)
   end
 end
 
-function Pipe.onMovedEntity(event)
-  local entity = event.moved_entity
-  if not Config.isPipeName(entity.name) then return end
-  local hidden = getHiddenEntities(entity.unit_number)
-  if not hidden then return end
-  local pos = Position.new(entity.position)
-  hidden.assembler.teleport(pos)
-  hidden.inserter.teleport(pos)
-  hidden.chest.teleport(pos:translate(entity.direction, .5))
-end
-
 function Pipe.updateFluidFilter(entity)
-  local hidden = getHiddenEntities(entity.unit_number)
-  if not hidden then return end
-  updateUnipipesForSystem(hidden.assembler.fluidbox, hidden.assembler.fluidbox.get_fluid_system_id(1))
+  updateUnipipesForSystem(entity.fluidbox)
 end
 
 function Pipe.setFluidFilter(entity, fluidName)
-  local hidden = getHiddenEntities(entity.unit_number)
-  if not hidden then return end
-  local isInput = entity.name == Config.PIPE_FILL_NAME
-  local itemName = Config.getFluidItem(fluidName)
-  hidden.assembler.set_recipe(isInput and Config.getFluidFillRecipe(fluidName) or Config.getFluidExtractRecipe(fluidName))
-  hidden.assembler.direction = Direction.opposite(entity.direction)  -- need to set after setting recipe
-  hidden.inserter.set_filter(1, itemName)
-  Chest.setItemFilter(hidden.chest, {name = itemName, quality = "normal"})
+  if fluidName then
+    setupLinkConnection(entity, fluidName)
+    entity.fluidbox.set_filter(1, fluidName and {name = fluidName, force = true} or nil)
+  else
+    removeLinkConnection(entity)
+    entity.fluidbox.set_filter(1, nil)
+  end
 end
 
-function updateUnipipesForSystem(fluidbox, systemId)
+function updateUnipipesForSystem(fluidbox)
   local unipipes = {}
-  local fluidType = findConnectedUnipipes(fluidbox, systemId, unipipes, {})
+  local fluidType = findConnectedUnipipes(fluidbox, nil, unipipes, {})
   if not fluidType then return end
   for _, pipe in pairs(unipipes) do
     Pipe.setFluidFilter(pipe, fluidType)
@@ -123,26 +165,29 @@ function testFluidbox(fluidbox, i)
   return pcall(function() return fluidbox.get_filter(i) end) and pcall(function() return fluidbox[i] end)
 end
 
-function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
+-- fluidboxIdx may be nil to search all fluidbox indices, or non-nil to only consider one.
+function findConnectedUnipipes(fluidbox, fluidboxIdx, unipipes, visited)
   if not fluidbox.valid or not fluidbox.owner then return end
   if table.any(visited[fluidbox.owner.unit_number] or {}, function(v) return v == fluidbox end) then return end
   visited[fluidbox.owner.unit_number] = visited[fluidbox.owner.unit_number] or {}
   table.insert(visited[fluidbox.owner.unit_number], fluidbox)
   local fluidType = nil
-  local isUnipipe = fluidbox.owner and fluidbox.owner.name == Config.HIDDEN_ASSEMBLER_NAME
+  local isUnipipe = fluidbox.owner and Config.isPipeName(fluidbox.owner.name)
 
   if isUnipipe then
-    local unipipe = getPipeFromAssembler(fluidbox.owner)
-    if unipipe and unipipe.valid then table.insert(unipipes, unipipe) end
+    table.insert(unipipes, fluidbox.owner)
   end
 
   for i = 1, #fluidbox do
-    if fluidbox.get_fluid_system_id(i) == systemId and testFluidbox(fluidbox, i) then
+    if not fluidboxIdx or i == fluidboxIdx then
+      -- if not fluidType and not isUnipipe and fluidbox.get_locked_fluid(i) then fluidType = fluidbox.get_locked_fluid(i) end
       if not fluidType and not isUnipipe and fluidbox.get_filter(i) then fluidType = fluidbox.get_filter(i).name end
       if not fluidType and not isUnipipe and fluidbox[i] then fluidType = fluidbox[i].name end
-      for _, connection in pairs(fluidbox.get_connections(i) or {}) do
-        local rv = findConnectedUnipipes(connection, systemId, unipipes, visited)
-        fluidType = fluidType or rv
+      for _, connection in pairs(fluidbox.get_pipe_connections(i) or {}) do
+        if connection.target then
+          local rv = findConnectedUnipipes(connection.target, connection.target_fluidbox_index, unipipes, visited)
+          fluidType = fluidType or rv
+        end
       end
     end
   end
@@ -150,116 +195,34 @@ function findConnectedUnipipes(fluidbox, systemId, unipipes, visited)
 end
 
 function onEntityDestroyed(event)
-  local hidden = getHiddenEntities(event.useful_id)
-  game.print("Object destroyed with hidden=" .. (hidden and "nonnil" or "nil"))
-  if hidden then
-    if storage.hiddenAssemblerToPipe and hidden.assembler.unit_number then
-      storage.hiddenAssemblerToPipe[hidden.assembler.unit_number] = nil
-    else
-      game.print("Missing data with unipipe. Please report this message on the Unipipe mod page. Assembler info: " .. (hidden.assembler or "nil") .. ", " .. (hidden.assembler and hidden.assembler.unit_number or "nil"))
+  if event.type ~= defines.target_type.entity then return end
+
+  table.each(getHiddenSurface().find_entities_filtered{name = Config.HIDDEN_LINKED_PIPE_NAME}, function(linkedPipe)
+    if #linkedPipe.fluidbox.get_linked_connections() == 0 then
+      destroyLinkedPipe(linkedPipe)
     end
-    for k,v in pairs(hidden) do
-      v.destroy()
-    end
-    storage.hiddenEntities[event.useful_id] = nil
-  end
+  end)
 end
 
 script.on_event(defines.events.on_object_destroyed, function(event)
   pcall(onEntityDestroyed, event)
 end)
 
-script.on_event(defines.events.on_player_rotated_entity, function(event)
-  local entity = event.entity
-  if not Config.isPipeName(entity.name) then return end
-  local hidden = getHiddenEntities(entity.unit_number)
-  if hidden then
-    hidden.assembler.direction = Direction.opposite(entity.direction)
-  end
-end)
-
 function Pipe.openGui(player, entity)
-  player.gui.relative.unipipeFrame.visible = true
+  local lastFilter = entity.fluidbox.get_filter(1)
   script.on_event(defines.events.on_tick, function(event)
     if not entity.valid then return end
-    local hidden = getHiddenEntities(entity.unit_number)
-    if hidden then
-      local inventory = hidden.chest.get_output_inventory()
-      local itemType = inventory.get_filter(1)
-      local fluidType = Config.getFluidFromFluidItem(itemType)
-      local itemCount = inventory.get_item_count()
-      local fluidPerItem = 100
-      local maxItems = (#inventory * game.item_prototypes[itemType].stack_size)
-      local contentsRow = player.gui.relative.unipipeFrame.contentsRow
-      contentsRow.fluidFilter.elem_value = fluidType
-      contentsRow.fluidFilter.tooltip = game.fluid_prototypes[fluidType].localised_name
-      contentsRow.amountLabel.caption = { "zy-unipipe.amount", util.format_number(itemCount * fluidPerItem, true), util.format_number(maxItems * fluidPerItem, true) }
-      contentsRow.amountBar.value = itemCount / maxItems
-    end
-  end)
-
-  script.on_event(defines.events.on_gui_elem_changed, function(event)
-    if not entity.valid then return end
-    local element = event.element
-    if not element.parent or element ~= element.parent.fluidFilter then return end
-    if element.elem_value and element.elem_value ~= "" then
-      -- Don't let them set an empty filter.
-      Pipe.setFluidFilter(entity, element.elem_value)
+    local filter = entity.fluidbox.get_filter(1)
+    if (filter and filter.name) ~= (lastFilter and lastFilter.name) then
+      -- Player changed the filter, update the unipipe.
+      lastFilter = filter
+      Pipe.setFluidFilter(entity, filter and filter.name)
     end
   end)
 
   script.on_event(defines.events.on_gui_closed, function(event)
-    player.gui.relative.unipipeFrame.visible = false
     script.on_event(defines.events.on_tick, nil)
-    script.on_event(defines.events.on_gui_elem_changed, nil)
   end)
-end
-
-function Pipe.buildGui(player)
-  player.gui.relative.add {
-    type = "frame",
-    name = "unipipeFrame",
-    direction = "vertical",
-    caption = { "zy-unipipe.heading" },
-    anchor = {
-      gui = defines.relative_gui_type.entity_with_energy_source_gui,
-      position = defines.relative_gui_position.bottom
-    },
-    style = "frame",
-    visible = false
-  }
-  local contentsRow = player.gui.relative.unipipeFrame.add {
-    type = "flow",
-    name = "contentsRow",
-    direction = "horizontal",
-    style = "horizontal_flow_with_extra_right_margin",
-  }
-  contentsRow.add {
-    type = "choose-elem-button",
-    elem_type = "fluid",
-    name = "fluidFilter",
-    mouse_button_filter = {"left"},
-    tooltip = "Fluid type",
-    style = "slot_button",
-  }
-  contentsRow.add {
-    type = "label",
-    name = "amountLabel",
-    caption = "0",
-  }
-  contentsRow.add {
-    type = "progressbar",
-    name = "amountBar",
-    value = 0,
-  }
-  local note = player.gui.relative.unipipeFrame.add {
-    type = "label",
-    name = "note",
-    single_line = false,
-    caption = { "zy-unipipe.note" },
-    style = "zy-unipipe-note",
-  }
-  note.style.horizontally_stretchable = true  -- why in fuck's sake is this not settable in the data stage?
 end
 
 function Pipe.destroyGui(player)

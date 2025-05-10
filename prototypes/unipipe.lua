@@ -116,12 +116,30 @@ local function createItemEntityRecipe(protoName, isInput)
     minable = { mining_time = 0.2, result = protoName },
     gui_mode = "all",
     corpse = "",
-    fluid_box = { volume = 10000, pipe_connections = {} },
+		fluid_box =
+		{
+			max_pipeline_extent = 4294967295,
+			volume = 20,
+			pipe_covers = pipecoverspictures(),
+			pipe_connections =
+        isInput and
+          {
+            { direction = defines.direction.south, position = {0, 0.5}, flow_direction = "input" },
+            { connection_type="linked", linked_connection_id=1, flow_direction = "output" },
+          }
+        or
+          {
+            { direction = defines.direction.north, position = {0, -0.5}, flow_direction = "output" },
+            { connection_type="linked", linked_connection_id=1, flow_direction = "input" },
+          }
+		},
+    -- fluid_box = { volume = 10000, pipe_connections = {} },
     energy_source = { type = "void" },
+    pumping_speed = 200,
     selecttable_in_game = true,
-    collision_box = {{-0.29, -0.9}, {0.29, 0.9}},
+    -- collision_box = {{-0.29, -0.9}, {0.29, 0.9}},
     -- selection_box = {{-0.2, -.2}, {0.2, .2}},
-    selection_box = {{-0.5, -1}, {0.5, 1}},
+    -- selection_box = {{-0.5, -1}, {0.5, 1}},
     animations = {
       north = { layers = {
         {
@@ -190,70 +208,6 @@ local function createItemEntityRecipe(protoName, isInput)
     }
   })
 
-  --- Hidden entities ---
-
-  local baseInserter = data.raw["inserter"]["bulk-inserter"]
-  local baseHidden = {
-      flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
-      -- flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hidden", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
-      hidden = true,
-      hidden_in_factoriopedia = true,
-      collision_mask = { layers = {} },
-      selection_box = {{0,0}, {0,0}},
-      order = "z",
-      max_health = 2147483648,
-      energy_source = { type = "void" },
-  }
-  local inserter = table.dictionary_combine(table.deepcopy(baseInserter), baseHidden, {
-    name = Config.HIDDEN_INSERTER_NAME,
-    extension_speed = 1,
-    rotation_speed = 0.5,
-    stack_size_bonus = 20,
-    collision_box = {{-0.05, -0.05}, {0.05, 0.05}},
-    pickup_position = {0, -.8},
-    insert_position = {0, .8},
-    draw_inserter_arrow = false,
-    hand_base_picture = util.empty_sprite(1),
-    hand_closed_picture = util.empty_sprite(1),
-    hand_open_picture = util.empty_sprite(1),
-    hand_base_shadow = util.empty_sprite(1),
-    hand_closed_shadow = util.empty_sprite(1),
-    hand_open_shadow = util.empty_sprite(1),
-    platform_picture = util.empty_sprite(1),
-  })
-  inserter.minable = nil
-  inserter.next_upgrade = nil
-
-  local baseAssembler = data.raw["assembling-machine"]["assembling-machine-3"]
-  local assembler = table.dictionary_combine(table.deepcopy(baseAssembler), baseHidden, {
-    name = Config.HIDDEN_ASSEMBLER_NAME,
-    flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
-    collision_box = {{-0.6, -1.5}, {0.6, 1.5}},
-    drawing_box = {{0,0}, {0,0}},
-    crafting_speed = 100,
-    bottleneck_ignore = true,
-    module_slots = 0,
-  })
-  assembler.fluid_boxes[1].pipe_connections[1].position = {0, -1.5}
-  assembler.fluid_boxes[2].pipe_connections[1].position = {0, 1.5}
-  assembler.minable = nil
-  assembler.animation = nil
-  assembler.module_specification = nil
-  assembler.allowed_effects = nil
-  assembler.next_upgrade = nil
-
-  local storageSize = settings.startup["zy-unipipe-storage-size"].value
-  local baseChest = data.raw["linked-container"]["linked-chest"]
-  local chest = table.dictionary_combine(table.deepcopy(baseChest), baseHidden, {
-    name = Config.HIDDEN_CHEST_NAME,
-    picture = util.empty_sprite(1),
-    inventory_size = math.ceil(storageSize / 20),
-    inventory_type = "with_filters_and_bar",
-    gui_mode = "all",
-  })
-  chest.minable = nil
-  chest.next_upgrade = nil
-
   --- Recipe ---
   local crafting_cost = settings.startup["zy-unipipe-crafting-cost"].value
   local ingredients = {
@@ -283,12 +237,41 @@ local function createItemEntityRecipe(protoName, isInput)
     auto_recycle = false,
   }
 
-  return {item, entity, recipe, inserter, assembler, chest}
+  return {item, entity, recipe}
 end
 
 local function create(protoName, protoNameIn, protoNameOut)
   local inputProtos = createItemEntityRecipe(protoNameIn, true)
   local outputProtos = createItemEntityRecipe(protoNameOut, false)
+
+  --- Hidden entities ---
+  local baseHidden = {
+    flags = {"placeable-player", "placeable-off-grid", "not-blueprintable", "not-deconstructable", "not-on-map", "hide-alt-info", "not-flammable", "no-copy-paste", "not-selectable-in-game", "not-upgradable"},
+    -- hidden = true,
+    hidden_in_factoriopedia = true,
+    order = "z",
+    max_health = 2147483648,
+    energy_source = { type = "void" },
+  }
+  local linkedPipe = table.merge(
+    table.merge(table.deepcopy(data.raw["pipe-to-ground"]["pipe-to-ground"]), baseHidden), {
+      name = Config.HIDDEN_LINKED_PIPE_NAME,
+    }
+  )
+  linkedPipe["fluid_box"].volume = 100
+  linkedPipe["fluid_box"].max_pipeline_extent=4294967295
+  linkedPipe["fluid_box"]["pipe_connections"][2]={
+    connection_type = "linked",
+    linked_connection_id = 1,
+  }
+
+  local pipe = table.merge(
+    table.merge(table.deepcopy(data.raw["pipe"]["pipe"]), baseHidden), {
+      name = Config.HIDDEN_PIPE_NAME,
+    }
+  )
+  pipe["fluid_box"].volume = 100
+  pipe["fluid_box"].max_pipeline_extent=4294967295
 
   --- Technology ---
 
@@ -413,7 +396,7 @@ local function create(protoName, protoNameIn, protoNameOut)
 
   data:extend(inputProtos)
   data:extend(outputProtos)
-  data:extend({ technology })
+  data:extend({ pipe, linkedPipe, technology })
 end
 
 create(Config.PIPE_PREFIX, Config.PIPE_FILL_NAME, Config.PIPE_EXTRACT_NAME)

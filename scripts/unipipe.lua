@@ -125,7 +125,8 @@ end
 
 function Pipe.onBuiltPipe(event, entity)
   script.register_on_object_destroyed(entity)
-  -- Pipe.setFluidFilter(entity, Config.NULL_FLUID_NAME)
+  local filter = entity.fluidbox.get_filter(1)
+  Pipe.setFluidFilter(entity, filter and filter.name)
   if settings.global["zy-unipipe-autofilter-mode"].value ~= "disabled" then
     updateUnipipesForSystem(entity.fluidbox)
   end

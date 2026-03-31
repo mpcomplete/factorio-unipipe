@@ -20,6 +20,13 @@ data:extend({
     default_value = true
   },
   {
+    type = "bool-setting",
+    name = "zy-unipipe-factorissimo-compat",
+    setting_type = "startup",
+    default_value = true,
+    description = "When enabled, Unipipe networks treat Factorissimo building interiors as part of their parent surface, even with per-surface mode enabled."
+  },
+  {
     type = "string-setting",
     name = "zy-unipipe-autofilter-mode",
     setting_type = "runtime-global",

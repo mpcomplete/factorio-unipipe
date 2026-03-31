@@ -6,6 +6,10 @@ local util = require("__core__/lualib/util")
 
 Pipe = {}
 
+function Pipe.getNetworkSurface(entity)
+  return entity.surface
+end
+
 function getHiddenSurface()
   local surface = game.get_surface(Config.HIDDEN_SURFACE_NAME)
   if not surface then
@@ -56,7 +60,10 @@ end
 
 function getFluidId(entity, fluidName)
   local surfaceName = "nauvis"
-  if settings.startup["zy-unipipe-per-surface"].value then surfaceName = entity.surface.name end
+  if settings.startup["zy-unipipe-per-surface"].value then
+    local networkSurface = Pipe.getNetworkSurface(entity) or entity.surface
+    surfaceName = networkSurface.name
+  end
   return surfaceName .. "/" .. entity.force.name .. "/" .. fluidName
 end
 

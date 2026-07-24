@@ -1,7 +1,24 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.0.10
-Date: 2026 jul 08
-  - Updated for Factorio 2.1
+Version: 1.1.0
+Date: 2026-07-23
+  Fixes:
+    - Updated for Factorio 2.1 runtime API changes by replacing removed LuaEntity::fluidbox table
+    access with LuaEntity fluid methods (get_fluid_filter, set_fluid_filter, 
+    get_fluid_box_linked_connections, etc.).
+    - Fixed crash when placing Unipipe entities in 2.1 ("LuaEntity doesn't contain key fluidbox").
+    - Fixed manually selected fluid filters not establishing hidden linked-pipe backend entities.
+    Added on_tick change detection during GUI open to immediately apply filter changes. Filter 
+    change detection now uses string-based comparison (getFluidNameFromFilter) to avoid missing 
+    table-identity changes.
+    - Fixed multi-fluid machine port auto-filtering choosing the first fluid regardless of which
+    port the Unipipe is connected to. Traversal now propagates pipe connection indices and recipe
+    fallback resolves per-port fluids using connection index and fluidbox prototype data. 
+    Prototype and connection iteration now uses deterministic ipairs order instead of pairs.
+    - Increased internal buffer volume from 20 to 500 units to fix throughput bottleneck.
+  Changes:
+    - Raised base dependency to 2.1+.
+    - Corrected player-facing text spelling from "Extracter" to "Extractor" (locale/README only;
+    internal prototype IDs unchanged for save compatibility). 
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.9
 Date: 2026-03-31

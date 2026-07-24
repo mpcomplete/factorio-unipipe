@@ -5,7 +5,7 @@
   "author": "zysnarch",
   "factorio_version": "2.1",
   "dependencies": [
-    "base >= 1.1",
+    "base >= 2.1",
     "kry_stdlib >= 1.4.8"
   ],
   "description": "Linked pipes that fill or extract from a single globally linked storage, one per fluid type. Set the fluid type in the GUI or automatically based on pipe connections and the contents will be shared among all other unipipes with that fluid type. Pairs well with Unichest mod and its included selection tool for setting fluid filters."

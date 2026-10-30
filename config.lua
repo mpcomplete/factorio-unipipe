@@ -8,6 +8,11 @@ Config.HIDDEN_SURFACE_NAME = Config.PIPE_PREFIX .. "-hidden-surface"
 Config.HIDDEN_PIPE_NAME = Config.PIPE_PREFIX .. "-hidden-pipe" -- connects all pipes of the same fluid together
 Config.HIDDEN_LINKED_PIPE_NAME = Config.PIPE_PREFIX .. "-hidden-linked-pipe" -- links pipe-fill and pipe-extract to the hidden-pipe
 
+-- Factorio 2.1.22 changed get_fluid_filter / get_fluid_segment_filter / set_fluid_filter to take
+-- a FluidID and return LuaFluidPrototype instead of FluidFilter. The version is checked here so
+-- the rest of the code can use the appropriate API.
+Config.USES_FLUID_ID_FILTERS = helpers.compare_versions(helpers.game_version, "2.1.22") >= 0
+
 function Config.isPipeName(name)
   return name == Config.PIPE_FILL_NAME or name == Config.PIPE_EXTRACT_NAME
 end

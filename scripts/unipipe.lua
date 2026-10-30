@@ -9,6 +9,7 @@ Pipe = {}
     -- Normalize 2.1 filter objects into a string
 function Pipe.getFluidNameFromFilter(filter)
   if not filter then return nil end
+  if Config.USES_FLUID_ID_FILTERS then return filter.name end
   local fluid = filter.fluid or filter.name
   if type(fluid) == "string" then return fluid end
   if type(fluid) == "table" or type(fluid) == "userdata" then
@@ -274,7 +275,11 @@ end
 function Pipe.setFluidFilter(entity, fluidName)
   if fluidName then
     setupLinkConnection(entity, fluidName)
-    entity.set_fluid_filter(1, {fluid = fluidName})
+    if Config.USES_FLUID_ID_FILTERS then
+      entity.set_fluid_filter(1, fluidName)
+    else
+      entity.set_fluid_filter(1, {fluid = fluidName})
+    end
   else
     removeLinkConnection(entity)
     entity.set_fluid_filter(1, nil)

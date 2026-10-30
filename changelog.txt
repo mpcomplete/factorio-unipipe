@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.1
+Date: 2026-10-30
+  Fixes:
+    - Fixed crash caused by a fluid filter API change in Factorio 2.1.22. LuaEntity fluid filter
+    methods now return/take a FluidID instead of a FluidFilter.
+---------------------------------------------------------------------------------------------------
 Version: 1.1.0
 Date: 2026-07-23
   Fixes:
